@@ -1,0 +1,1 @@
+"C:\Program Files (x86)\Bochs-2.6.9\Bochsdbg.exe" -f "C:\Users\User\Desktop\bochs-cfg.bxrc"
