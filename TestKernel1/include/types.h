@@ -10,8 +10,8 @@ typedef unsigned int bool;
 typedef signed char i8;
 typedef unsigned char u8;
 
-typedef signed char byte;
-typedef unsigned char sbyte;
+typedef unsigned char byte;
+typedef signed char sbyte;
 
 typedef signed short int i16;
 typedef unsigned short int u16;

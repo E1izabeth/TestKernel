@@ -6,13 +6,13 @@
 
 typedef struct {
 	ushort bits;
-} RawSelector;
+} raw_selector_t;
 
 typedef struct {
 	ushort index;
 	bool useLdt;
 	byte rplLevel;
-} SelectorInfo;
+} selector_info_t;
 
 #pragma pack(push, 1)
 
@@ -20,7 +20,7 @@ typedef union {
 	struct { byte b0, b1, b2, b3, b4, b5, b6, b7; } bf;
 	byte ba[8];                 
 	u64 n;
-} RawDescriptor;
+} raw_descriptor_t;
 
 typedef struct
 {
@@ -30,24 +30,24 @@ typedef struct
 	byte  access;              // ‘лаги доступа, определ€ющие в каком кольце можно использовать этот сегмент.
 	byte  granularity;
 	byte  base_high;
-}Descriptor;
+}descriptor_t;
 
 typedef struct
 {
 	ushort limit;			// селектор
 	uint adr;					// адрес
-}gdtPtr;
+}gdt_ptr_t;
 
 #pragma pack(pop)
 
 typedef struct
 {
-	RawDescriptor null_descr;			// нулевой дескриптор
-	RawDescriptor code32_descr;		// дескриптор сегмента кода защищ™нного режима
-	RawDescriptor data32_descr;		// дескриптор сегмента данных защищ™нного режима
-	RawDescriptor code16_descr;		// дескриптор кода реального режима
-	RawDescriptor data16_descr;		// дескриптор данных реального режима
-} GdtSegment;
+	raw_descriptor_t null_descr;			// нулевой дескриптор
+	raw_descriptor_t code32_descr;		// дескриптор сегмента кода защищ™нного режима
+	raw_descriptor_t data32_descr;		// дескриптор сегмента данных защищ™нного режима
+	raw_descriptor_t code16_descr;		// дескриптор кода реального режима
+	raw_descriptor_t data16_descr;		// дескриптор данных реального режима
+} gdt_segment_t;
 
 typedef struct
 {
@@ -64,16 +64,16 @@ typedef struct
 	byte info;//011101010
 	byte system_used;// : 3;доступны дл€ использовани§ операционной системой
 	uint frame; //: 20
-} PageTableEntryInfo;
+} page_table_entry_info_t;
 
 typedef struct
 {
 	int bits;
-} PageTableEntry;
+} page_table_entry_t;
 
 typedef struct
 {
-	PageTableEntry pages[1024];
+	page_table_entry_t pages[1024];
 } PageTable;
 
 typedef struct
@@ -90,19 +90,13 @@ typedef struct
 	byte  always0;
 	byte  flags;
 	ushort base_2;           
-}idtDescriptor;
+}idt_descriptor_t;
 
 typedef struct
 {
 	ushort limit;
 	uint adr;
-}idtPtr;
-
-typedef struct
-{
-	uint base;
-	uint count;
-}isr_t;
+}idt_ptr_t;
 
 #pragma pack(pop)
 
@@ -113,61 +107,14 @@ typedef struct
 	u32 edi, esi, ebp, esp, ebx, edx, ecx, eax; 
 	u32 int_no, err_code;    
 	u32 eip, cs, eflags, useresp, ss; 
-}registers;
+}registers_t;
 
-SelectorInfo makeSelector(ushort index, bool useLdt, byte rplLevel);
-RawSelector compileSelector(SelectorInfo info);
-SelectorInfo parseSelector(RawSelector s);
+selector_info_t makeSelector(ushort index, bool useLdt, byte rplLevel);
+raw_selector_t compileSelector(selector_info_t info);
+selector_info_t parseSelector(raw_selector_t s);
 void outportb(u16 port, u8 value);
+byte inportb(u16 port);
 
 extern void idt_flush(u32);
 extern void gdt_flush(u32);
-extern void isr0(u32);
-extern void isr1(u32);
-extern void isr2(u32);
-extern void isr3(u32);
-extern void isr4(u32);
-extern void isr5(u32);
-extern void isr6(u32);
-extern void isr7(u32);
-extern void isr8(u32);
-extern void isr9(u32);
-extern void isr10(u32);
-extern void isr11(u32);
-extern void isr12(u32);
-extern void isr13(u32);
-extern void isr14(u32);
-extern void isr15(u32);
-extern void isr16(u32);
-extern void isr17(u32);
-extern void isr18(u32);
-extern void isr19(u32);
-extern void isr20(u32);
-extern void isr21(u32);
-extern void isr22(u32);
-extern void isr23(u32);
-extern void isr24(u32);
-extern void isr25(u32);
-extern void isr26(u32);
-extern void isr27(u32);
-extern void isr28(u32);
-extern void isr29(u32);
-extern void isr30(u32);
-extern void isr31(u32);
-extern void irq0(u32);
-extern void irq1(u32);
-extern void irq2(u32);
-extern void irq3(u32);
-extern void irq4(u32);
-extern void irq5(u32);
-extern void irq6(u32);
-extern void irq7(u32);
-extern void irq8(u32);
-extern void irq9(u32);
-extern void irq10(u32);
-extern void irq11(u32);
-extern void irq12(u32);
-extern void irq13(u32);
-extern void irq14(u32);
-extern void irq15(u32);
 #endif

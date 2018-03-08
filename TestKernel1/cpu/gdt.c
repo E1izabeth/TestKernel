@@ -2,9 +2,9 @@
 #include <cpu/tables.h>
 
 
-Descriptor compileDescriptor(int base, int limit, byte access, byte gran)
+descriptor_t compileDescriptor(int base, int limit, byte access, byte gran)
 {
-	Descriptor d = {};
+	descriptor_t d = {};
 	d.base_low = (base & 0xFFFF);
 	d.base_middle = (base >> 16) & 0xFF;
 	d.base_high = (base >> 24) & 0xFF;
@@ -17,9 +17,9 @@ Descriptor compileDescriptor(int base, int limit, byte access, byte gran)
 	return d;
 }
 
-RawDescriptor makeDescriptor(Descriptor info)
+raw_descriptor_t makeDescriptor(descriptor_t info)
 {
-	RawDescriptor d = { 0 };
+	raw_descriptor_t d = { 0 };
 	d.bf.b7 = info.base_high & 0xff;
 	d.bf.b6 = info.granularity & 0xff;
 	d.bf.b5 = info.access;
@@ -31,9 +31,9 @@ RawDescriptor makeDescriptor(Descriptor info)
 	return d;
 }
 
-Descriptor parseDescriptor(RawDescriptor s)
+descriptor_t parseDescriptor(raw_descriptor_t s)
 {
-	Descriptor info;
+	descriptor_t info;
 	info.base_high = s.bf.b7 & 0xff;
 	info.granularity = s.bf.b6 & 0xf0;
 	info.access = s.bf.b5;
@@ -45,12 +45,12 @@ Descriptor parseDescriptor(RawDescriptor s)
 	return info;
 }
 
-GdtSegment seg;
+gdt_segment_t seg;
 
-gdtPtr init_gdt()
+gdt_ptr_t init_gdt()
 {
-	gdtPtr ptr;
-	ptr.limit = (sizeof(Descriptor) * 5 - 1);
+	gdt_ptr_t ptr;
+	ptr.limit = (sizeof(descriptor_t) * 5 - 1);
 	ptr.adr = (uint)&seg;
 
 	//Descriptor descr = { 0xabcd, 0xdef0, 1, 2, 3, 4 };
@@ -62,50 +62,46 @@ gdtPtr init_gdt()
 	seg.data32_descr = makeDescriptor(compileDescriptor(0, 0xFFFFFFFF, 0xF2, 0xCF));//F2 CF
 	
 
-	RawSelector codeSelector = compileSelector(makeSelector(3, false, 0));
-	RawSelector dataSelector = compileSelector(makeSelector(4, false, 0));
+	raw_selector_t codeSelector = compileSelector(makeSelector(3, false, 0));
+	raw_selector_t dataSelector = compileSelector(makeSelector(4, false, 0));
 
 	asm("lgdt 0(,%0,)"::"a"(&ptr));
-	//for (;;)
 	asm("movw %0, %%ax" :: "r"(dataSelector));
 	asm("movw %ax, %ds");
 	asm("movw %ax, %es");
 	asm("movw %ax, %gs");
 	asm("movw %ax, %fs");
 	asm("movw %ax, %ss");
-	//for (int i = 0; ;) i++;
-
 	asm("movw %0, %%ax" :: "r"(codeSelector));
 	asm("pushl %eax");
 	asm("movl $continue_pm, %eax");
 	asm("pushl %eax");
 	asm("retf");
 	asm("continue_pm:");
-
-
+	
 	//gdt_flush((u32)&ptr);
 
 	return ptr;
 }
 
-SelectorInfo makeSelector(ushort index, bool useLdt, byte rplLevel)
+selector_info_t makeSelector(ushort index, bool useLdt, byte rplLevel)
 {
-	SelectorInfo info = { index, useLdt, rplLevel };
+	selector_info_t info = { index, useLdt, rplLevel };
 	return info;
 }
 
-RawSelector compileSelector(SelectorInfo info)
+raw_selector_t compileSelector(selector_info_t info)
 {
-	RawSelector s = { 0 };
+	raw_selector_t s = { 0 };
 	s.bits |= (info.index << 3) & 0xfff8; // bits 15-3
 	s.bits |= ((info.useLdt ? 1 : 0) << 2) & 0x0040; // bit 2
 	s.bits |= (info.rplLevel & 0x0003); // bits 1-0
 	return s;
 }
 
-SelectorInfo parseSelector(RawSelector s)
+selector_info_t parseSelector(raw_selector_t s)
 {
-	SelectorInfo info;
+	selector_info_t info;
 	info.index = (s.bits & 0xfff8) >> 3;
 	info.useLdt = (s.bits & 0x0040) != 0;
 	info.rplLevel = (s.bits & 0x0003);

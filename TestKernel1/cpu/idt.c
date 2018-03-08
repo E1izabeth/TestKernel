@@ -1,7 +1,81 @@
 #include <types.h>
 #include <cpu/tables.h>
 
-idtDescriptor idt_seg[256];
+#define PIC1		0x20		/* IO base address for master PIC */
+#define PIC2		0xA0		/* IO base address for slave PIC */
+#define PIC1_COMMAND	PIC1
+#define PIC1_DATA	(PIC1+1)
+#define PIC2_COMMAND	PIC2
+#define PIC2_DATA	(PIC2+1)
+#define ICW1_ICW4	0x01		/* ICW4 (not) needed */
+#define ICW1_SINGLE	0x02		/* Single (cascade) mode */
+#define ICW1_INTERVAL4	0x04		/* Call address interval 4 (8) */
+#define ICW1_LEVEL	0x08		/* Level triggered (edge) mode */
+#define ICW1_INIT	0x10		/* Initialization - required! */
+
+#define ICW4_8086	0x01		/* 8086/88 (MCS-80/85) mode */
+#define ICW4_AUTO	0x02		/* Auto (normal) EOI */
+#define ICW4_BUF_SLAVE	0x08		/* Buffered mode/slave */
+#define ICW4_BUF_MASTER	0x0C		/* Buffered mode/master */
+#define ICW4_SFNM	0x10		/* Special fully nested (not) */
+
+void* memcpy(void* to, void* from, int length)
+{
+	byte* dst = to;
+	byte* src = from;
+	byte* end = to + length;
+
+	while (dst < end)
+		*(dst++) = *(src++);
+
+	return dst;
+}
+
+void* memset(void* to, byte value, int length)
+{
+	byte* dst = to;
+	byte* end = to + length;
+
+	while (dst < end)
+		*(dst++) = value;
+
+	return dst;
+}
+
+#pragma pack(push, 1)
+
+typedef struct {
+	byte opCliCode; // 0xFA
+	byte opPush1Code; // 0x6A 
+	byte opPush1Arg; 
+	byte opPush2Code; // 0x6A
+	byte opPush2Arg;
+	byte opJmpCode; // 0xE9
+	uint opJmpArg; // (&opNop-target)
+	byte opNop[6]; // 0x90
+} raw_custom_handler_instance_t;
+
+#pragma pack(pop)
+
+extern void irq_common_stub(uint);
+extern void isr_common_stub(uint);
+
+void makeCustomHandler(raw_custom_handler_instance_t* h, byte n)
+{
+	h->opCliCode = 0xFA;
+	h->opPush1Code = 0x6A;
+	h->opPush1Arg = 0;
+	h->opPush2Code = 0x6A;
+	h->opPush2Arg = n;
+	h->opJmpCode = 0xE9;
+	h->opJmpArg = ((byte*)&irq_common_stub - (byte*)h->opNop);
+	memset(h->opNop, 0x90, 6);
+}
+
+
+#define handlersCount 0x30
+raw_custom_handler_instance_t custom_handlers[handlersCount];
+idt_descriptor_t idt_seg[handlersCount];
 
 void idt_set(byte num, uint base, ushort sel, byte flags)
 {
@@ -12,62 +86,56 @@ void idt_set(byte num, uint base, ushort sel, byte flags)
 	idt_seg[num].flags = flags;
 }
 
-idtPtr init_idt()
+void PIC_remap(byte offset1, byte offset2)
 {
-	idtPtr ptr;
+	byte a1, a2;
 
-	ptr.limit = sizeof(idtDescriptor) * 32 - 1;
+	a1 = inportb(PIC1_DATA);                        // save masks
+	a2 = inportb(PIC2_DATA);
+
+	outportb(PIC1_COMMAND, ICW1_INIT + ICW1_ICW4);  // starts the initialization sequence (in cascade mode)
+	outportb(PIC2_COMMAND, ICW1_INIT + ICW1_ICW4);
+	
+	outportb(PIC1_DATA, offset1);                 // ICW2: Master PIC vector offset
+	outportb(PIC2_DATA, offset2);                 // ICW2: Slave PIC vector offset
+	
+	outportb(PIC1_DATA, 4);                       // ICW3: tell Master PIC that there is a slave PIC at IRQ2 (0000 0100)
+	outportb(PIC2_DATA, 2);                   // ICW3: tell Slave PIC its cascade identity (0000 0010)
+
+	outportb(PIC1_DATA, ICW4_8086);
+	outportb(PIC2_DATA, ICW4_8086);
+
+	outportb(PIC1_DATA, 0xFF); //disable all IRQs
+	outportb(PIC1_DATA, a1);   // restore saved masks.
+	outportb(PIC2_DATA, a2);
+}
+
+idt_ptr_t init_idt()
+{
+	idt_ptr_t ptr;
+
+	ptr.limit = sizeof(idt_descriptor_t) * handlersCount - 1;
 	ptr.adr = (uint)&idt_seg;
 
-	/*for (uint i = 0; i < 32; i++)
-	{
-	idt_set(i, (u32)isr, compileSelector(makeSelector(3, false, 0)).bits, 0x8E);
-	}*/
+		
+	
+	for (uint i = 0; i < handlersCount; i++)
+	{		
+		makeCustomHandler(&(custom_handlers[i]), i);
+		idt_set(i, (u32)&(custom_handlers[i]), compileSelector(makeSelector(3, false, 0)).bits, 0x8E);
+	}
 
-	// Remap the irq table.
-	outportb(0x20, 0x11);
-	outportb(0xA0, 0x11);
-	outportb(0x21, 0x20);
-	outportb(0xA1, 0x28);
-	outportb(0x21, 0x04);
-	outportb(0xA1, 0x02);
-	outportb(0x21, 0x01);
-	outportb(0xA1, 0x01);
-	outportb(0x21, 0x0);
-	outportb(0xA1, 0x0);
+	PIC_remap(0x20, 0x28); //0x20 0x28
 
-	idt_set(0, (uint)isr0, compileSelector(makeSelector(3, false, 0)).bits, 0x8E);
-	idt_set(1, (uint)isr1, compileSelector(makeSelector(3, false, 0)).bits, 0x8E);
-	idt_set(2, (uint)isr2, compileSelector(makeSelector(3, false, 0)).bits, 0x8E);
-	idt_set(3, (uint)isr3, compileSelector(makeSelector(3, false, 0)).bits, 0x8E);
-	idt_set(4, (uint)isr4, compileSelector(makeSelector(3, false, 0)).bits, 0x8E);
-	idt_set(5, (uint)isr5, compileSelector(makeSelector(3, false, 0)).bits, 0x8E);
-	idt_set(6, (uint)isr6, compileSelector(makeSelector(3, false, 0)).bits, 0x8E);
-	idt_set(7, (uint)isr7, compileSelector(makeSelector(3, false, 0)).bits, 0x8E);
-	idt_set(8, (uint)isr8, compileSelector(makeSelector(3, false, 0)).bits, 0x8E);
-	idt_set(9, (uint)isr9, compileSelector(makeSelector(3, false, 0)).bits, 0x8E);
-	idt_set(10, (uint)isr10, compileSelector(makeSelector(3, false, 0)).bits, 0x8E);
-	idt_set(11, (uint)isr11, compileSelector(makeSelector(3, false, 0)).bits, 0x8E);
-	idt_set(12, (uint)isr12, compileSelector(makeSelector(3, false, 0)).bits, 0x8E);
-	idt_set(13, (uint)isr13, compileSelector(makeSelector(3, false, 0)).bits, 0x8E);
-	idt_set(14, (uint)isr14, compileSelector(makeSelector(3, false, 0)).bits, 0x8E);
-	idt_set(15, (uint)isr15, compileSelector(makeSelector(3, false, 0)).bits, 0x8E);
-	idt_set(16, (uint)isr16, compileSelector(makeSelector(3, false, 0)).bits, 0x8E);
-	idt_set(17, (uint)isr17, compileSelector(makeSelector(3, false, 0)).bits, 0x8E);
-	idt_set(18, (uint)isr18, compileSelector(makeSelector(3, false, 0)).bits, 0x8E);
-	idt_set(19, (uint)isr19, compileSelector(makeSelector(3, false, 0)).bits, 0x8E);
-	idt_set(20, (uint)isr20, compileSelector(makeSelector(3, false, 0)).bits, 0x8E);
-	idt_set(21, (uint)isr21, compileSelector(makeSelector(3, false, 0)).bits, 0x8E);
-	idt_set(22, (uint)isr22, compileSelector(makeSelector(3, false, 0)).bits, 0x8E);
-	idt_set(23, (uint)isr23, compileSelector(makeSelector(3, false, 0)).bits, 0x8E);
-	idt_set(24, (uint)isr24, compileSelector(makeSelector(3, false, 0)).bits, 0x8E);
-	idt_set(25, (uint)isr25, compileSelector(makeSelector(3, false, 0)).bits, 0x8E);
-	idt_set(26, (uint)isr26, compileSelector(makeSelector(3, false, 0)).bits, 0x8E);
-	idt_set(27, (uint)isr27, compileSelector(makeSelector(3, false, 0)).bits, 0x8E);
-	idt_set(28, (uint)isr28, compileSelector(makeSelector(3, false, 0)).bits, 0x8E);
-	idt_set(29, (uint)isr29, compileSelector(makeSelector(3, false, 0)).bits, 0x8E);
-	idt_set(30, (uint)isr30, compileSelector(makeSelector(3, false, 0)).bits, 0x8E);
-	idt_set(31, (uint)isr31, compileSelector(makeSelector(3, false, 0)).bits, 0x8E);
+	//outportb(0x11, 0x20);
+	//outportb(0x11, 0xA1);
+	//outportb(0x20, 0x21);
+	//outportb(0x28, 0xA1);
+	//outportb(0x04, 0x21);
+	//outportb(0x2, 0xA1);
+	//outportb(0x01, 0x21);
+	//outportb(0x01, 0xA1);
+	//outportb(0xFF, 0x21);
 
 	idt_flush((u32)&ptr);
 	return ptr;

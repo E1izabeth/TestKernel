@@ -3,13 +3,20 @@
 
 void outportb(u16 port, u8 value)
 {
-	asm volatile ("outb %1, %0" : : "dN" (port), "a" (value));
+	asm volatile ("outb %b0, %w1" : : "a" (value), "d" (port));
+}
+
+byte inportb(u16 port)
+{
+	byte value;
+	asm volatile ("inb %w1, %b0" : "=a" (value): "d" (port) );
+	return value;
 }
 
 //?
-PageTableEntry encodePageTableEntry(PageTableEntryInfo info)
+page_table_entry_t encodePageTableEntry(page_table_entry_info_t info)
 {
-	PageTableEntry entry;
+	page_table_entry_t entry;
 	entry.bits |= info.info & 0xEA;
 	entry.bits |= (info.system_used << 8) & 0x07;
 	entry.bits |= (info.frame << 11) & 0xFF;
@@ -17,20 +24,20 @@ PageTableEntry encodePageTableEntry(PageTableEntryInfo info)
 }
 
 //?
-PageTableEntryInfo decodePageTableEntry(PageTableEntry e)
+page_table_entry_info_t decodePageTableEntry(page_table_entry_t e)
 {
-	PageTableEntryInfo info;
+	page_table_entry_info_t info;
 	info.info = e.bits & 0xEA;
 	info.system_used = (e.bits & 0x07) >> 8;
 	info.frame = (e.bits & 0xFF) >> 11;
 }
 
-void setPageTableEntry(PageTableEntry* table, int index, PageTableEntryInfo info)
+void setPageTableEntry(page_table_entry_t* table, int index, page_table_entry_info_t info)
 {
 	table[index] = encodePageTableEntry(info);
 }
 
-PageTableEntryInfo getPageTableEntry(PageTableEntry* table, int index)
+page_table_entry_info_t getPageTableEntry(page_table_entry_t* table, int index)
 {
 	return decodePageTableEntry(table[index]);
 }
