@@ -1,7 +1,7 @@
 
 dirs := .		\
 		./cpu
-
+#		./gpu
 #		./src/util	\
 #		./src/dbg	\
 #		./src/vm

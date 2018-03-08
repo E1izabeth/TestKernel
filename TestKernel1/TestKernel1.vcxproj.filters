@@ -32,6 +32,7 @@
     <ClCompile Include="cpu\idt.c">
       <Filter>cpu</Filter>
     </ClCompile>
+    <ClCompile Include="display.c" />
   </ItemGroup>
   <ItemGroup>
     <None Include="startup.asm" />
@@ -58,6 +59,9 @@
     </ClInclude>
     <ClInclude Include="include\cpu\multiboot.h">
       <Filter>include\cpu</Filter>
+    </ClInclude>
+    <ClInclude Include="include\display.h">
+      <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -78,6 +78,7 @@
     <ClCompile Include="cpu\idt.c" />
     <ClCompile Include="cpu\tables.c" />
     <ClCompile Include="debugging\i386-stub.c" />
+    <ClCompile Include="display.c" />
     <ClCompile Include="main.c" />
     <ClCompile Include="makefile" />
   </ItemGroup>
@@ -92,6 +93,7 @@
   <ItemGroup>
     <ClInclude Include="include\cpu\multiboot.h" />
     <ClInclude Include="include\cpu\tables.h" />
+    <ClInclude Include="include\display.h" />
     <ClInclude Include="include\types.h" />
   </ItemGroup>
   <ItemDefinitionGroup />
