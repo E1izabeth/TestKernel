@@ -41,7 +41,7 @@ idt_flush:
 gdt_flush:
    mov eax, [esp+4]  ; Берет указатель на GDT, передаваемый в качестве параметра.
    lgdt [eax]        ; Загружает указатель GDT
-   mov ax, 0x10      ; 0x10 - смещение на наш сегмент данных
+   mov ax, 0x10      ; 0x10 - смещение на сегмент данных
    mov ds, ax	       
    mov es, ax
    mov fs, ax

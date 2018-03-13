@@ -7,7 +7,7 @@
 #define VIDEO_WIDTH 80    //ширина экрана
 #define VIDEO_RAM 0xb8000 //адрес видеопамяти
 
-#define NUM_TERMINALS 2
+#define NUM_TERMINALS 4
 
 typedef struct
 {

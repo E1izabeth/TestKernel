@@ -33,6 +33,7 @@
       <Filter>cpu</Filter>
     </ClCompile>
     <ClCompile Include="display.c" />
+    <ClCompile Include="threads.c" />
   </ItemGroup>
   <ItemGroup>
     <None Include="startup.asm" />
@@ -61,6 +62,9 @@
       <Filter>include\cpu</Filter>
     </ClInclude>
     <ClInclude Include="include\display.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\threads.h">
       <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>

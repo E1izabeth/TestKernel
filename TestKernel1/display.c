@@ -6,7 +6,6 @@ void init_tty(int term_num)
 	terminals[term_num].tty_attribute = 7;
 }
 
-//TODO: optimize
 void buff_to_display(char buff[2 * VIDEO_HEIGHT * VIDEO_WIDTH])
 {
 	for (int i = 0; i < 2 * VIDEO_HEIGHT * VIDEO_WIDTH; i++)
