@@ -39,7 +39,4 @@ void putchar(int term_num, char c);
 void puts(int term_num, const char *s);
 
 
-char *utoa(uint i);
-char *itoa(int i);
-int atoi(char* s);
 #endif

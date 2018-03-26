@@ -1,5 +1,5 @@
 #include <types.h>
-#include <cpu/tables.h>
+#include <arch/ia32/cpu/tables.h>
 
 
 descriptor_t compileDescriptor(int base, int limit, byte access, byte gran)

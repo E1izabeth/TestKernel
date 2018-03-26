@@ -70,32 +70,38 @@
     <RemoteBuildCommandLine>make kernel</RemoteBuildCommandLine>
     <RemoteReBuildCommandLine>make rebuild</RemoteReBuildCommandLine>
     <RemoteCleanCommandLine>make clean</RemoteCleanCommandLine>
-    <RemoteBuildOutputs>/home/user/projects/TestKernel1/kernel.elf</RemoteBuildOutputs>
+    <RemoteBuildOutputs>/home/ged/projects/TestKernel1/kernel.elf</RemoteBuildOutputs>
     <NMakeIncludeSearchPath>$(ProjectDir)include</NMakeIncludeSearchPath>
   </PropertyGroup>
   <ItemGroup>
-    <ClCompile Include="cpu\gdt.c" />
-    <ClCompile Include="cpu\idt.c" />
-    <ClCompile Include="cpu\tables.c" />
-    <ClCompile Include="debugging\i386-stub.c" />
-    <ClCompile Include="display.c" />
-    <ClCompile Include="main.c" />
     <ClCompile Include="makefile" />
-    <ClCompile Include="threads.c" />
+    <ClCompile Include="src\arch\ia32\cpu\cpu.c" />
+    <ClCompile Include="src\arch\ia32\cpu\gdt.c" />
+    <ClCompile Include="src\arch\ia32\cpu\idt.c" />
+    <ClCompile Include="src\arch\ia32\cpu\io.c" />
+    <ClCompile Include="src\arch\ia32\cpu\tables.c" />
+    <ClCompile Include="src\arch\ia32\debugging\i386-stub.c" />
+    <ClCompile Include="src\arch\ia32\display.c" />
+    <ClCompile Include="src\main.c" />
+    <ClCompile Include="src\mem.c" />
+    <ClCompile Include="src\arch\ia32\threads.c" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="cpu\idt.asm" />
     <None Include="scripts\remount-tftp-share-to-mnt.sh" />
     <None Include="scripts\start-bochs.bat" />
     <None Include="scripts\start-qemu-for-debugger.sh" />
     <None Include="sections-layout" />
-    <None Include="startup.asm" />
+    <None Include="src\arch\ia32\cpu\idt.asm" />
+    <None Include="src\startup.asm" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\cpu\multiboot.h" />
-    <ClInclude Include="include\cpu\tables.h" />
-    <ClInclude Include="include\display.h" />
-    <ClInclude Include="include\threads.h" />
+    <ClInclude Include="include\arch\ia32\cpu\cpu.h" />
+    <ClInclude Include="include\arch\ia32\cpu\io.h" />
+    <ClInclude Include="include\arch\ia32\cpu\tables.h" />
+    <ClInclude Include="include\arch\ia32\display.h" />
+    <ClInclude Include="include\arch\ia32\multiboot\multiboot.h" />
+    <ClInclude Include="include\arch\ia32\threads.h" />
+    <ClInclude Include="include\mem.h" />
     <ClInclude Include="include\types.h" />
   </ItemGroup>
   <ItemDefinitionGroup />

@@ -1,10 +1,7 @@
 
-dirs := .		\
-		./cpu
-#		./gpu
-#		./src/util	\
-#		./src/dbg	\
-#		./src/vm
+dirs := ./src				\
+		./src/arch/ia32		\
+		./src/arch/ia32/cpu
 
 define getTargets 
 	$(foreach 				\

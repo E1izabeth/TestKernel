@@ -1,5 +1,7 @@
 #include <types.h>
-#include <cpu/tables.h>
+#include <arch/ia32/cpu/tables.h>
+#include <arch/ia32/cpu/io.h>
+#include <mem.h>
 
 #define PIC1		0x20		/* IO base address for master PIC */
 #define PIC2		0xA0		/* IO base address for slave PIC */
@@ -18,29 +20,6 @@
 #define ICW4_BUF_SLAVE	0x08		/* Buffered mode/slave */
 #define ICW4_BUF_MASTER	0x0C		/* Buffered mode/master */
 #define ICW4_SFNM	0x10		/* Special fully nested (not) */
-
-void* memcpy(void* to, void* from, int length)
-{
-	byte* dst = to;
-	byte* src = from;
-	byte* end = to + length;
-
-	while (dst < end)
-		*(dst++) = *(src++);
-
-	return dst;
-}
-
-void* memset(void* to, byte value, int length)
-{
-	byte* dst = to;
-	byte* end = to + length;
-
-	while (dst < end)
-		*(dst++) = value;
-
-	return dst;
-}
 
 #pragma pack(push, 1)
 
@@ -72,8 +51,8 @@ void makeCustomHandler(raw_custom_handler_instance_t* h, byte n)
 	memset(h->opNop, 0x90, 6);
 }
 
-
 #define handlersCount 0x30
+
 raw_custom_handler_instance_t custom_handlers[handlersCount];
 idt_descriptor_t idt_seg[handlersCount];
 

@@ -1,12 +1,38 @@
-#include <cpu/tables.h>
-#include <cpu/multiboot.h>
-#include <display.h>
-#include <cpu/tables.h>
-#include <threads.h>
+#include <arch/ia32/cpu/tables.h>
+#include <arch/ia32/cpu/cpu.h>
+#include <arch/ia32/display.h>
+#include <arch/ia32/threads.h>
 
-extern display_t display;
 thread_t threads[NUM_THREADS];
 int tmp_thread;
+
+extern display_t display;
+
+terminal_t terminals[NUM_TERMINALS];
+
+
+void thread2(int num)
+{
+	threads[num].processed = true;
+	for (;;)
+	{
+		puts(display.tmp_terminal_num, "th2\n");
+	}
+	threads[num].processed = false;
+	return;
+}
+
+void thread1(int num)
+{
+	threads[num].processed = true;
+	for (;;)
+	{
+		thread2(1);
+		puts(display.tmp_terminal_num, "th1\n");
+	}
+	threads[num].processed = false;
+	return;
+}
 
 void irq_handler(registers_t regs)
 {
@@ -53,55 +79,19 @@ extern idt_ptr_t init_idt();
 idt_ptr_t idt;
 gdt_ptr_t gdt;
 
-terminal_t terminals[NUM_TERMINALS];
 
-void thread1(int num)
+void init_cpu()
 {
-	threads[num].processed = true;
-	for (;;)
-	{
-		thread2(1);
-		puts(display.tmp_terminal_num, "th1\n");
-	}
-	threads[num].processed = false;
-	return;
-}
-
-void thread2(int num)
-{
-	threads[num].processed = true;
-	for (;;) 
-	{
-		puts(display.tmp_terminal_num, "th2\n");
-	}
-	threads[num].processed = false;
-	return;
-}
-
-void kernel_main(struct multiboot_info multiboot)
-{
-	//asm("movl %%esp, %0" : "=r"(esp));
 	init_threads(threads);
 	init_display();
 
 	clear(display.tmp_terminal_num);
+
 	gdt = init_gdt();
 	idt = init_idt();
-	
-	thread1(0);
-	
-	int x = sizeof(gdt_ptr_t);
-	puts(1, "term 1\n");
-	puts(2, "term 2\n");
-	puts(3, "term 3\n");
-	puts(display.tmp_terminal_num, itoa(x));
-	
+
 	puts(display.tmp_terminal_num, "Hello world from my custom kernel! ;)\n");
-	asm("int3");
-	
-	for (;;)
-		;
-	
-	asm("hlt");
+
+	thread1(0);
 }
 
