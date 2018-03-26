@@ -48,6 +48,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'" Label="Configuration">
     <UseDebugLibraries>true</UseDebugLibraries>
     <ConfigurationType>Makefile</ConfigurationType>
+    <RemoteRootDir>projects</RemoteRootDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'" Label="Configuration">
     <UseDebugLibraries>false</UseDebugLibraries>
@@ -70,7 +71,7 @@
     <RemoteBuildCommandLine>make kernel</RemoteBuildCommandLine>
     <RemoteReBuildCommandLine>make rebuild</RemoteReBuildCommandLine>
     <RemoteCleanCommandLine>make clean</RemoteCleanCommandLine>
-    <RemoteBuildOutputs>/home/ged/projects/TestKernel1/kernel.elf</RemoteBuildOutputs>
+    <RemoteBuildOutputs>$(RemoteProjectDir)/kernel.elf</RemoteBuildOutputs>
     <NMakeIncludeSearchPath>$(ProjectDir)include</NMakeIncludeSearchPath>
   </PropertyGroup>
   <ItemGroup>
