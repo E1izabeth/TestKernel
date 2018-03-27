@@ -16,8 +16,10 @@ _multiboot_header:
 [EXTERN kernel_main]
 [GLOBAL _start]
 [SECTION .text]
+        align 16
 _start:
-	mov esp, 0x200000-4
+	;mov esp, 0x200000-4
+	mov esp, stack_end
 	;push MULTIBOOT_HEADER_MAGIC
 	;push MULTIBOOT_HEADER_FLAGS
 	;push CHECKSUM
@@ -25,3 +27,12 @@ _start:
 	push ebx
 	cli
 	call kernel_main
+
+
+	
+[SECTION .bss]
+        align 16
+stack_begin:
+		resb 4096  ; Reserve 4 KiB stack space
+stack_end:
+        align 16

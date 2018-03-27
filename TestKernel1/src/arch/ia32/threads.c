@@ -1,5 +1,8 @@
-#include <threads.h>
+#include <arch/ia32/cpu/tables.h>
+#include <arch/ia32/display.h>
+#include <arch/ia32/threads.h>
 #include <types.h>
+
 int tmp_thread_num;
 
 int change_thread(thread_t threads[NUM_THREADS], registers_t regs)

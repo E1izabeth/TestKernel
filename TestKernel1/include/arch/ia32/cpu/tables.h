@@ -9,34 +9,38 @@ typedef struct {
 } raw_selector_t;
 
 typedef struct {
+	// Segment index 0x0000..0x1fff
 	ushort index;
+	// GDT/LDT switch
 	bool useLdt;
+	// Priviledges level 0..3
 	byte rplLevel;
 } selector_info_t;
 
 #pragma pack(push, 1)
 
 typedef union {
+	// bytes as struct
 	struct { byte b0, b1, b2, b3, b4, b5, b6, b7; } bf;
+	// bytes as array
 	byte ba[8];                 
+	// bytes as ulong
 	u64 n;
 } raw_descriptor_t;
 
-typedef struct
-{
+typedef struct {
 	ushort limit_low;           // ћладшие 16 битов граничного значени€ limit.
 	ushort base_low;            // ћладшие 16 битов адресной базы.
 	byte  base_middle;         // —ледующие 8 битов адресной базы.
 	byte  access;              // ‘лаги доступа, определ€ющие в каком кольце можно использовать этот сегмент.
 	byte  granularity;
 	byte  base_high;
-}descriptor_t;
+} descriptor_t;
 
-typedef struct
-{
+typedef struct {
 	ushort limit;			// селектор
 	uint adr;					// адрес
-}gdt_ptr_t;
+} gdt_ptr_t;
 
 #pragma pack(pop)
 
@@ -112,9 +116,8 @@ typedef struct
 selector_info_t makeSelector(ushort index, bool useLdt, byte rplLevel);
 raw_selector_t compileSelector(selector_info_t info);
 selector_info_t parseSelector(raw_selector_t s);
-void outportb(u16 port, u8 value);
-byte inportb(u16 port);
 
 extern void idt_flush(u32);
 extern void gdt_flush(u32);
+
 #endif

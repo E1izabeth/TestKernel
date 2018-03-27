@@ -1,71 +1,34 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="debugging">
-      <UniqueIdentifier>{04ebf9f8-97f6-47f7-b734-d03f3baf11a6}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="cpu">
-      <UniqueIdentifier>{3dbcc432-e063-4a85-8a69-8941ad90f5a7}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="include">
-      <UniqueIdentifier>{3230fb59-f0d8-443d-8d32-f05d82920556}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="include\cpu">
-      <UniqueIdentifier>{8bb0e89f-f411-4997-8e46-cb3393570013}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="scripts">
-      <UniqueIdentifier>{dba61b05-9c42-4bff-b9ee-449a5ea884bf}</UniqueIdentifier>
-    </Filter>
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="main.c" />
     <ClCompile Include="makefile" />
-    <ClCompile Include="cpu\tables.c">
-      <Filter>cpu</Filter>
-    </ClCompile>
-    <ClCompile Include="debugging\i386-stub.c">
-      <Filter>debugging</Filter>
-    </ClCompile>
-    <ClCompile Include="cpu\gdt.c">
-      <Filter>cpu</Filter>
-    </ClCompile>
-    <ClCompile Include="cpu\idt.c">
-      <Filter>cpu</Filter>
-    </ClCompile>
-    <ClCompile Include="display.c" />
-    <ClCompile Include="threads.c" />
+    <ClCompile Include="src\main.c" />
+    <ClCompile Include="src\mem.c" />
+    <ClCompile Include="src\arch\ia32\cpu\cpu.c" />
+    <ClCompile Include="src\arch\ia32\cpu\gdt.c" />
+    <ClCompile Include="src\arch\ia32\cpu\idt.c" />
+    <ClCompile Include="src\arch\ia32\cpu\io.c" />
+    <ClCompile Include="src\arch\ia32\cpu\tables.c" />
+    <ClCompile Include="src\arch\ia32\debugging\i386-stub.c" />
+    <ClCompile Include="src\arch\ia32\display.c" />
+    <ClCompile Include="src\arch\ia32\threads.c" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="startup.asm" />
-    <None Include="scripts\start-qemu-for-debugger.sh">
-      <Filter>scripts</Filter>
-    </None>
-    <None Include="scripts\remount-tftp-share-to-mnt.sh">
-      <Filter>scripts</Filter>
-    </None>
-    <None Include="cpu\idt.asm">
-      <Filter>cpu</Filter>
-    </None>
-    <None Include="scripts\start-bochs.bat">
-      <Filter>scripts</Filter>
-    </None>
     <None Include="sections-layout" />
+    <None Include="src\startup.asm" />
+    <None Include="scripts\start-qemu-for-debugger.sh" />
+    <None Include="scripts\start-bochs.bat" />
+    <None Include="scripts\remount-tftp-share-to-mnt.sh" />
+    <None Include="src\arch\ia32\cpu\idt.asm" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\types.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="include\cpu\tables.h">
-      <Filter>include\cpu</Filter>
-    </ClInclude>
-    <ClInclude Include="include\cpu\multiboot.h">
-      <Filter>include\cpu</Filter>
-    </ClInclude>
-    <ClInclude Include="include\display.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="include\threads.h">
-      <Filter>include</Filter>
-    </ClInclude>
+    <ClInclude Include="include\types.h" />
+    <ClInclude Include="include\mem.h" />
+    <ClInclude Include="include\arch\ia32\cpu\cpu.h" />
+    <ClInclude Include="include\arch\ia32\cpu\io.h" />
+    <ClInclude Include="include\arch\ia32\cpu\tables.h" />
+    <ClInclude Include="include\arch\ia32\multiboot\multiboot.h" />
+    <ClInclude Include="include\arch\ia32\display.h" />
+    <ClInclude Include="include\arch\ia32\threads.h" />
   </ItemGroup>
 </Project>
