@@ -46,6 +46,7 @@ descriptor_t parseDescriptor(raw_descriptor_t s)
 }
 
 gdt_segment_t seg;
+raw_selector_t codeSelector, dataSelector;
 
 gdt_ptr_t init_gdt()
 {
@@ -62,8 +63,8 @@ gdt_ptr_t init_gdt()
 	seg.data32_descr = makeDescriptor(compileDescriptor(0, 0xFFFFFFFF, 0xF2, 0xCF));//F2 CF
 	
 
-	raw_selector_t codeSelector = compileSelector(makeSelector(3, false, 0));
-	raw_selector_t dataSelector = compileSelector(makeSelector(4, false, 0));
+	codeSelector = compileSelector(makeSelector(3, false, 0));
+	dataSelector = compileSelector(makeSelector(4, false, 0));
 
 	asm("lgdt 0(,%0,)"::"a"(&ptr));
 	asm("movw %0, %%ax" :: "r"(dataSelector));

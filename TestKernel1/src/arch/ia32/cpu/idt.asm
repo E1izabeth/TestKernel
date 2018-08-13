@@ -4,12 +4,12 @@
 [EXTERN irq_handler]
 
 [GLOBAL irq_common_stub]
-
 irq_common_stub:
    pusha                    ; Помещает в стек содержимое регистров edi,esi,ebp,esp,ebx,edx,ecx,eax
 
    mov ax, ds               ; Младшие 16 битов регистра eax = ds.
    push eax                 ; Сохранение дескриптора сегмента данных
+   push esp
 
    mov ax, 0x10  ; Загрузка сегмента данных ядра
    mov ds, ax
@@ -19,6 +19,7 @@ irq_common_stub:
 
    call irq_handler
 
+   pop eax
    pop eax        ; Перезагрузка оригинального дескриптора сегмента данных
    mov ds, ax
    mov es, ax

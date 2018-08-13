@@ -68,11 +68,31 @@
   <ImportGroup Label="PropertySheets" />
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">
-    <RemoteBuildCommandLine>make kernel</RemoteBuildCommandLine>
+    <RemoteBuildCommandLine>make rebuild</RemoteBuildCommandLine>
     <RemoteReBuildCommandLine>make rebuild</RemoteReBuildCommandLine>
     <RemoteCleanCommandLine>make clean</RemoteCleanCommandLine>
-    <RemoteBuildOutputs>$(RemoteProjectDir)/kernel.elf</RemoteBuildOutputs>
+    <RemoteBuildOutputs>/home/user/projects/TestKernel1/kernel.elf;$(RemoteBuildOutputs)</RemoteBuildOutputs>
     <NMakeIncludeSearchPath>$(ProjectDir)include</NMakeIncludeSearchPath>
+    <RemoteProjectDir>$(RemoteRootDir)/$(ProjectName)</RemoteProjectDir>
+    <BuildCommandLine>
+    </BuildCommandLine>
+    <ReBuildCommandLine>
+    </ReBuildCommandLine>
+    <CleanCommandLine>
+    </CleanCommandLine>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'">
+    <RemoteProjectDir>$(RemoteRootDir)/$(ProjectName)</RemoteProjectDir>
+    <RemoteBuildOutputs>/home/user/projects/TestKernel1/kernel.elf;$(RemoteBuildOutputs)</RemoteBuildOutputs>
+    <RemoteReBuildCommandLine>make rebuild</RemoteReBuildCommandLine>
+    <RemoteCleanCommandLine>make clean</RemoteCleanCommandLine>
+    <RemoteBuildCommandLine>make rebuild</RemoteBuildCommandLine>
+    <BuildCommandLine>
+    </BuildCommandLine>
+    <ReBuildCommandLine>
+    </ReBuildCommandLine>
+    <CleanCommandLine>
+    </CleanCommandLine>
   </PropertyGroup>
   <ItemGroup>
     <ClCompile Include="makefile" />

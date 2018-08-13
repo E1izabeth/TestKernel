@@ -4,8 +4,7 @@
 #define true (1 == 1)
 #define false (1 != 1)
 
-typedef unsigned int bool; 
-
+typedef unsigned int bool;
 typedef signed char i8;
 typedef unsigned char u8;
 

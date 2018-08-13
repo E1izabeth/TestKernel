@@ -2,33 +2,114 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClCompile Include="makefile" />
-    <ClCompile Include="src\main.c" />
-    <ClCompile Include="src\mem.c" />
-    <ClCompile Include="src\arch\ia32\cpu\cpu.c" />
-    <ClCompile Include="src\arch\ia32\cpu\gdt.c" />
-    <ClCompile Include="src\arch\ia32\cpu\idt.c" />
-    <ClCompile Include="src\arch\ia32\cpu\io.c" />
-    <ClCompile Include="src\arch\ia32\cpu\tables.c" />
-    <ClCompile Include="src\arch\ia32\debugging\i386-stub.c" />
-    <ClCompile Include="src\arch\ia32\display.c" />
-    <ClCompile Include="src\arch\ia32\threads.c" />
+    <ClCompile Include="src\main.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\mem.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\arch\ia32\display.c">
+      <Filter>src\arch\ia32</Filter>
+    </ClCompile>
+    <ClCompile Include="src\arch\ia32\threads.c">
+      <Filter>src\arch\ia32</Filter>
+    </ClCompile>
+    <ClCompile Include="src\arch\ia32\cpu\cpu.c">
+      <Filter>src\arch\ia32\cpu</Filter>
+    </ClCompile>
+    <ClCompile Include="src\arch\ia32\cpu\gdt.c">
+      <Filter>src\arch\ia32\cpu</Filter>
+    </ClCompile>
+    <ClCompile Include="src\arch\ia32\cpu\idt.c">
+      <Filter>src\arch\ia32\cpu</Filter>
+    </ClCompile>
+    <ClCompile Include="src\arch\ia32\cpu\io.c">
+      <Filter>src\arch\ia32\cpu</Filter>
+    </ClCompile>
+    <ClCompile Include="src\arch\ia32\cpu\tables.c">
+      <Filter>src\arch\ia32\cpu</Filter>
+    </ClCompile>
+    <ClCompile Include="src\arch\ia32\debugging\i386-stub.c">
+      <Filter>src\arch\ia32\debugging</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="sections-layout" />
-    <None Include="src\startup.asm" />
-    <None Include="scripts\start-qemu-for-debugger.sh" />
-    <None Include="scripts\start-bochs.bat" />
-    <None Include="scripts\remount-tftp-share-to-mnt.sh" />
-    <None Include="src\arch\ia32\cpu\idt.asm" />
+    <None Include="scripts\remount-tftp-share-to-mnt.sh">
+      <Filter>scripts</Filter>
+    </None>
+    <None Include="scripts\start-bochs.bat">
+      <Filter>scripts</Filter>
+    </None>
+    <None Include="scripts\start-qemu-for-debugger.sh">
+      <Filter>scripts</Filter>
+    </None>
+    <None Include="src\startup.asm">
+      <Filter>src</Filter>
+    </None>
+    <None Include="src\arch\ia32\cpu\idt.asm">
+      <Filter>src\arch\ia32\cpu</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\types.h" />
-    <ClInclude Include="include\mem.h" />
-    <ClInclude Include="include\arch\ia32\cpu\cpu.h" />
-    <ClInclude Include="include\arch\ia32\cpu\io.h" />
-    <ClInclude Include="include\arch\ia32\cpu\tables.h" />
-    <ClInclude Include="include\arch\ia32\multiboot\multiboot.h" />
-    <ClInclude Include="include\arch\ia32\display.h" />
-    <ClInclude Include="include\arch\ia32\threads.h" />
+    <ClInclude Include="include\mem.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\types.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="include\arch\ia32\display.h">
+      <Filter>include\arch\ia32</Filter>
+    </ClInclude>
+    <ClInclude Include="include\arch\ia32\threads.h">
+      <Filter>include\arch\ia32</Filter>
+    </ClInclude>
+    <ClInclude Include="include\arch\ia32\cpu\cpu.h">
+      <Filter>include\arch\ia32\cpu</Filter>
+    </ClInclude>
+    <ClInclude Include="include\arch\ia32\cpu\io.h">
+      <Filter>include\arch\ia32\cpu</Filter>
+    </ClInclude>
+    <ClInclude Include="include\arch\ia32\cpu\tables.h">
+      <Filter>include\arch\ia32\cpu</Filter>
+    </ClInclude>
+    <ClInclude Include="include\arch\ia32\multiboot\multiboot.h">
+      <Filter>include\arch\ia32\multiboot</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="include">
+      <UniqueIdentifier>{39ef2a68-2097-4435-a35e-57c196bf866e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\arch">
+      <UniqueIdentifier>{cf0129e3-0dc2-4eff-8ae7-128dc8342e1c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\arch\ia32">
+      <UniqueIdentifier>{9c84ea80-f2a7-4357-b41f-cb43846e2f3b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\arch\ia32\cpu">
+      <UniqueIdentifier>{2b09116b-dd3d-4ee8-9457-16498999e3b8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\arch\ia32\multiboot">
+      <UniqueIdentifier>{86225ce0-bec1-4ee1-9a7c-c8dfc7897917}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="scripts">
+      <UniqueIdentifier>{1fb8b201-6f37-4d35-b39d-b29beefa16de}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src">
+      <UniqueIdentifier>{f40ce649-6e3f-488d-a5eb-eaf5f3311032}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\arch">
+      <UniqueIdentifier>{58b1ad1a-05ce-4ed1-8789-361e8c6b2d33}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\arch\ia32">
+      <UniqueIdentifier>{ab63e4c7-64d8-404f-afe1-a317c3e64c93}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\arch\ia32\cpu">
+      <UniqueIdentifier>{da9b175f-db15-44c0-b367-abfc8a9e0abc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\arch\ia32\debugging">
+      <UniqueIdentifier>{81fd6aba-c3c3-4416-ad0e-fc729b512064}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
 </Project>

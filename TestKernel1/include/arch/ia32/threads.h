@@ -4,17 +4,17 @@
 #ifndef THREADS_H
 #define THREADS_H
 
-#define NUM_THREADS 2
+#define DEFAULT_STACK_SIZE 4096
+#define MAX_TOTAL_THREADS 200
 
 typedef struct
 {
-	//stack
-	int num;
-	int eip;
-	bool processed;
+	registers_t regs;
 }thread_t;
 
-void init_threads(thread_t threads[NUM_THREADS]);
-int change_thread(thread_t threads[NUM_THREADS], registers_t regs);
+void threading_start();
+
+void change_thread(registers_t* regs);
+int create_thread(void* start_function, void* stPointer);
 
 #endif
