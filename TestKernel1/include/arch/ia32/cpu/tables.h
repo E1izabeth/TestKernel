@@ -102,16 +102,20 @@ typedef struct
 	uint adr;
 }idt_ptr_t;
 
-#pragma pack(pop)
-
+typedef struct
+{
+	u32 edi, esi, ebp, esp, ebx, edx, ecx, eax;
+} registers_generic_t;
 
 typedef struct
 {
-	u32 ds;                 
-	u32 edi, esi, ebp, esp, ebx, edx, ecx, eax; 
+	u32 ds;           
+	registers_generic_t gen_regs;
 	u32 int_no, err_code;    
-	u32 eip, cs, eflags, useresp, ss; 
+	u32 eip, cs, eflags; 
 } registers_t;
+
+#pragma pack(pop)
 
 selector_info_t makeSelector(ushort index, bool useLdt, byte rplLevel);
 raw_selector_t compileSelector(selector_info_t info);

@@ -33,8 +33,8 @@ void kernel_main(struct multiboot_info multiboot)
 
 	init_cpu();
 	
-	create_thread(thread1, th1Stack);
-	// create_thread(thread2, th2Stack);
+	create_thread(thread1, th1Stack, sizeof(th1Stack));
+	create_thread(thread2, th2Stack, sizeof(th2Stack));
 
 	threading_start();
 

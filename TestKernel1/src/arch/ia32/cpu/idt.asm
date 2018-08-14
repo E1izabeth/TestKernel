@@ -19,7 +19,7 @@ irq_common_stub:
 
    call irq_handler
 
-   pop eax
+   pop esp
    pop eax        ; Перезагрузка оригинального дескриптора сегмента данных
    mov ds, ax
    mov es, ax

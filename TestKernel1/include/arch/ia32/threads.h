@@ -9,12 +9,13 @@
 
 typedef struct
 {
-	registers_t regs;
-}thread_t;
+	// registers_t regs;
+	byte* stackPtr;
+}	thread_t;
 
 void threading_start();
 
-void change_thread(registers_t* regs);
-int create_thread(void* start_function, void* stPointer);
+void change_thread(registers_t** regs);
+int create_thread(void* start_function, void* stPointer, int stackSize);
 
 #endif
