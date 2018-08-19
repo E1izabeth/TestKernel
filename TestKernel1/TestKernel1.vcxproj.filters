@@ -50,6 +50,12 @@
     <None Include="src\arch\ia32\cpu\idt.asm">
       <Filter>src\arch\ia32\cpu</Filter>
     </None>
+    <None Include="scripts\start-qemu-for-debugger-vs.sh">
+      <Filter>scripts</Filter>
+    </None>
+    <None Include="scripts\start-qemu-for-debugger-ui-loop.sh">
+      <Filter>scripts</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\mem.h">
@@ -110,6 +116,9 @@
     </Filter>
     <Filter Include="src\arch\ia32\debugging">
       <UniqueIdentifier>{81fd6aba-c3c3-4416-ad0e-fc729b512064}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\arch\arm">
+      <UniqueIdentifier>{faae11ff-dbff-4a1e-aa47-c1e561009993}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

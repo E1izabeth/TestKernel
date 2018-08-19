@@ -110,6 +110,8 @@
   <ItemGroup>
     <None Include="scripts\remount-tftp-share-to-mnt.sh" />
     <None Include="scripts\start-bochs.bat" />
+    <None Include="scripts\start-qemu-for-debugger-ui-loop.sh" />
+    <None Include="scripts\start-qemu-for-debugger-vs.sh" />
     <None Include="scripts\start-qemu-for-debugger.sh" />
     <None Include="sections-layout" />
     <None Include="src\arch\ia32\cpu\idt.asm" />

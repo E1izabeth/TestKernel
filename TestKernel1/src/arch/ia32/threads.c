@@ -28,6 +28,7 @@ int create_thread(void* start_function, void* stPointer, int stackSize)
 	byte* stackPtr = ((byte*)stPointer) + stackSize;
 	stackPtr -= sizeof(registers_t);
 	threads[currThreadsCount].stackPtr = stackPtr;
+	threads[currThreadsCount].id = currThreadsCount;
 
 	registers_t* regs = (registers_t*)stackPtr;
 	memset(regs, 0, sizeof(registers_t));
@@ -43,6 +44,11 @@ int create_thread(void* start_function, void* stPointer, int stackSize)
 	currThreadsCount++;
 }
 
+thread_t* get_thread()
+{
+	return &threads[currThreadIndex];
+}
+
 void change_thread(registers_t** regs)
 {
 	if (!threading_enabled)
@@ -51,4 +57,32 @@ void change_thread(registers_t** regs)
 	threads[currThreadIndex].stackPtr = *regs;
 	currThreadIndex = (currThreadIndex + 1) % currThreadsCount;
 	*regs = threads[currThreadIndex].stackPtr;
+}
+
+#define	_spin_try_lock(p)\
+	(!({  register int _r__; \
+	    __asm__ volatile("movl $1, %0; \n\
+			  xchgl %0, %1" \
+			: "=&r" (_r__), "=m" (*(p)) ); \
+	    _r__; }))
+
+slock_t slockInit()
+{
+	slock_t lock = { 0 };
+	return lock;
+}
+
+void slockCapture(slock_t *lock)
+{
+	while (!_spin_try_lock(&(lock->state)))
+		while (lock->state)
+			; // do nothing
+}
+
+void slockRelease(slock_t *lock)
+{
+	if (lock->state == 1)
+	{
+		lock->state = 0;
+	}
 }

@@ -8,27 +8,42 @@
 byte th1Stack[4096];
 byte th2Stack[4096];
 
+int sp = -1;
 void thread1()
 {
-	thread_loop(2, "th1\n");
+	thread_loop(2, "th1");
 }
 
 void thread2()
 {
-	thread_loop(3, "th2\n");
+	thread_loop(2, "th2");
 }
+
+slock_t lock;
 
 void thread_loop(int num, char* msg)
 {
+	thread_t* t = get_thread();
+
 	for (;;)
 	{
-		puts(num, msg);
+		slockCapture(&lock);
+
+		for (int i = 0; i < 10; i++)
+			puts(num, msg);
+	
+		puts(num, "\n");
+	
+		slockRelease(&lock);
+	
+		for (int i = 0; i < 1000000; i++);
 	}
 }
 
-
 void kernel_main(struct multiboot_info multiboot)
 {
+	lock = slockInit();
+
 	//asm("movl %%esp, %0" : "=r"(esp));
 
 	init_cpu();
