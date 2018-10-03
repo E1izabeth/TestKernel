@@ -79,6 +79,9 @@ void putchar(int term_num, char c)
 		terminals[term_num].tty_cursor += VIDEO_WIDTH;
 		terminals[term_num].tty_cursor -= terminals[term_num].tty_cursor % VIDEO_WIDTH;
 		break;
+	case '\t': //Если это символ новой строки
+		terminals[term_num].tty_cursor += 4;
+		break;
 
 	default:
 		*(video + terminals[term_num].tty_cursor * 2) = c;

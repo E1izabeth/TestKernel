@@ -96,6 +96,8 @@
   </PropertyGroup>
   <ItemGroup>
     <ClCompile Include="makefile" />
+    <ClCompile Include="src\arch\ia32\autoResetEvent.c" />
+    <ClCompile Include="src\arch\ia32\autoResetEventExample.c" />
     <ClCompile Include="src\arch\ia32\cpu\cpu.c" />
     <ClCompile Include="src\arch\ia32\cpu\gdt.c" />
     <ClCompile Include="src\arch\ia32\cpu\idt.c" />
@@ -103,6 +105,13 @@
     <ClCompile Include="src\arch\ia32\cpu\tables.c" />
     <ClCompile Include="src\arch\ia32\debugging\i386-stub.c" />
     <ClCompile Include="src\arch\ia32\display.c" />
+    <ClCompile Include="src\arch\ia32\manualResetEvent.c" />
+    <ClCompile Include="src\arch\ia32\manualResetEventExample.c" />
+    <ClCompile Include="src\arch\ia32\monitor.c" />
+    <ClCompile Include="src\arch\ia32\mutex.c" />
+    <ClCompile Include="src\arch\ia32\mutexExample.c" />
+    <ClCompile Include="src\arch\ia32\semaphore.c" />
+    <ClCompile Include="src\arch\ia32\monitorExample.c" />
     <ClCompile Include="src\main.c" />
     <ClCompile Include="src\mem.c" />
     <ClCompile Include="src\arch\ia32\threads.c" />
@@ -118,11 +127,17 @@
     <None Include="src\startup.asm" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\arch\ia32\autoResetEvent.h" />
     <ClInclude Include="include\arch\ia32\cpu\cpu.h" />
     <ClInclude Include="include\arch\ia32\cpu\io.h" />
     <ClInclude Include="include\arch\ia32\cpu\tables.h" />
     <ClInclude Include="include\arch\ia32\display.h" />
+    <ClInclude Include="include\arch\ia32\manualResetEvent.h" />
+    <ClInclude Include="include\arch\ia32\monitor.h" />
     <ClInclude Include="include\arch\ia32\multiboot\multiboot.h" />
+    <ClInclude Include="include\arch\ia32\mutex.h" />
+    <ClInclude Include="include\arch\ia32\semaphore.h" />
+    <ClInclude Include="include\arch\ia32\syncObjBaseDemo.h" />
     <ClInclude Include="include\arch\ia32\threads.h" />
     <ClInclude Include="include\mem.h" />
     <ClInclude Include="include\types.h" />

@@ -32,6 +32,23 @@
     <ClCompile Include="src\arch\ia32\debugging\i386-stub.c">
       <Filter>src\arch\ia32\debugging</Filter>
     </ClCompile>
+    <ClCompile Include="src\arch\ia32\mutex.c">
+      <Filter>src\arch\ia32</Filter>
+    </ClCompile>
+    <ClCompile Include="src\arch\ia32\semaphore.c">
+      <Filter>src\arch\ia32</Filter>
+    </ClCompile>
+    <ClCompile Include="src\arch\ia32\manualResetEvent.c">
+      <Filter>src\arch\ia32</Filter>
+    </ClCompile>
+    <ClCompile Include="src\arch\ia32\autoResetEvent.c">
+      <Filter>src\arch\ia32</Filter>
+    </ClCompile>
+    <ClCompile Include="src\arch\ia32\monitor.c" />
+    <ClCompile Include="src\arch\ia32\autoResetEventExample.c" />
+    <ClCompile Include="src\arch\ia32\manualResetEventExample.c" />
+    <ClCompile Include="src\arch\ia32\monitorExample.c" />
+    <ClCompile Include="src\arch\ia32\mutexExample.c" />
   </ItemGroup>
   <ItemGroup>
     <None Include="sections-layout" />
@@ -82,6 +99,22 @@
     <ClInclude Include="include\arch\ia32\multiboot\multiboot.h">
       <Filter>include\arch\ia32\multiboot</Filter>
     </ClInclude>
+    <ClInclude Include="include\arch\ia32\autoResetEvent.h">
+      <Filter>include\arch\ia32</Filter>
+    </ClInclude>
+    <ClInclude Include="include\arch\ia32\manualResetEvent.h">
+      <Filter>include\arch\ia32</Filter>
+    </ClInclude>
+    <ClInclude Include="include\arch\ia32\semaphore.h">
+      <Filter>include\arch\ia32</Filter>
+    </ClInclude>
+    <ClInclude Include="include\arch\ia32\mutex.h">
+      <Filter>include\arch\ia32</Filter>
+    </ClInclude>
+    <ClInclude Include="include\arch\ia32\monitor.h">
+      <Filter>include\arch\ia32</Filter>
+    </ClInclude>
+    <ClInclude Include="include\arch\ia32\syncObjBaseDemo.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="include">
