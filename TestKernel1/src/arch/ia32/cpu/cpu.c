@@ -62,6 +62,8 @@ void init_cpu()
 	gdt = init_gdt();
 	idt = init_idt();
 
+	init_directory();
+
 	puts(display.tmp_terminal_num, "Hello world from my custom kernel! ;)\n");
 }
 

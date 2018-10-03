@@ -3,6 +3,7 @@
 #ifndef TABLES_H
 #define TABLES_H
 
+#pragma pack(push, 1)
 
 typedef struct {
 	ushort bits;
@@ -16,8 +17,6 @@ typedef struct {
 	// Priviledges level 0..3
 	byte rplLevel;
 } selector_info_t;
-
-#pragma pack(push, 1)
 
 typedef union {
 	// bytes as struct
@@ -42,8 +41,6 @@ typedef struct {
 	uint adr;					// адрес
 } gdt_ptr_t;
 
-#pragma pack(pop)
-
 typedef struct
 {
 	raw_descriptor_t null_descr;			// нулевой дескриптор
@@ -53,22 +50,26 @@ typedef struct
 	raw_descriptor_t data16_descr;		// дескриптор данных реального режима
 } gdt_segment_t;
 
+#pragma pack(pop)
+
 typedef struct
 {
-	//uint present : 1;	//бит 0 : – Ч страница / таблица присутствует.?сли этот бит Ч 0, остальные биты элемента система может использовать по своему усмотрению, например, чтобы хранить информацию о том, где физически находитс¤ отсутствующа¤ страница
-	//uint rw : 1;	//бит 1 : W Ч страница / таблица доступна дл¤ записи
-	//uint u : 1;	//бит 2 : U Ч страница / таблица доступна дл¤ программ с CPL = 3
-	//uint pwt : 1;	//бит 3 : PWT Ч бит разрешени¤ сквозной записи
-	//uint psd : 1;	//бит 4 : PCD Ч бит запрещени¤ кэшировани¤
-	//uint access : 1;	//бит 5: ј Ч бит доступа(устанавливаетс¤ в 1 при любом обращении к таблице страниц или отдельной странице)
-	//uint dirty : 1;	//бит 6 : D Ч Ђгр¤зна¤ страницаї Ч устанавливаетс¤ в 1 при записи в страницу; всегда равен нулю дл¤ элементов каталога страниц
-	//uint pd : 1;	//бит 7 : PS Ч размер страницы. 1 Ч дл¤ страницы размером 2 или 4 мегабайта, иначе Ч 0
-	//uint global : 1;	//бит 8 : G Ч Ђглобальна¤ страницаї Ч страница не удал¤етс¤ из буфера TLB при переключении задач или перезагрузке регистра CR3(только на Pentium Pro, если установлен бит PGE регистра CR4)
+	bool isPresented;	//бит 0 : – Ч страница / таблица присутствует.?сли этот бит Ч 0, остальные биты элемента система может использовать по своему усмотрению, например, чтобы хранить информацию о том, где физически находитс¤ отсутствующа¤ страница
+	bool isWriteable;	//бит 1 : W Ч страница / таблица доступна дл¤ записи
+	bool isUserAccessible;	//бит 2 : U Ч страница / таблица доступна дл¤ программ с CPL = 3
+	bool isCacheWriteThough;	//бит 3 : PWT Ч бит разрешени¤ сквозной записи
+	bool isCashingDisabled;	//бит 4 : PCD Ч бит запрещени¤ кэшировани¤
+	bool wasAccessed;	//бит 5: ј Ч бит доступа(устанавливаетс¤ в 1 при любом обращении к таблице страниц или отдельной странице)
+	bool wasWritten;	//бит 6 : D Ч Ђгр¤зна¤ страницаї Ч устанавливsетс¤ в 1 при записи в страницу; всегда равен нулю дл¤ элементов каталога страниц
+	bool isExpanded;	//бит 7 : PS Ч размер страницы. 1 Ч дл¤ страницы размером 2 или 4 мегабайта, иначе Ч 0
+	bool isGlobal;	//бит 8 : G Ч Ђглобальна¤ страницаї Ч страница не удал¤етс¤ из буфера TLB при переключении задач или перезагрузке регистра CR3(только на Pentium Pro, если установлен бит PGE регистра CR4)
 
-	byte info;//011101010
-	byte system_used;// : 3;доступны для использовани¤ операционной системой
-	uint frame; //: 20
+	// byte info;//011101010
+	byte customBits;// : 3;доступны для использовани¤ операционной системой
+	uint physicalAddress; //: 20
 } page_table_entry_info_t;
+
+#pragma pack(push, 1)
 
 typedef struct
 {
@@ -82,10 +83,9 @@ typedef struct
 
 typedef struct
 {
+	PageTable catalog;
 	PageTable tables[1024];
-}PageDirectory;
-
-#pragma pack(push, 1)
+} PageDirectory;
 
 typedef struct
 {
@@ -94,7 +94,7 @@ typedef struct
 	byte  always0;
 	byte  flags;
 	ushort base_2;           
-}idt_descriptor_t;
+} idt_descriptor_t;
 
 typedef struct
 {
@@ -123,5 +123,8 @@ selector_info_t parseSelector(raw_selector_t s);
 
 extern void idt_flush(u32);
 extern void gdt_flush(u32);
+
+void init_directory();
+
 
 #endif

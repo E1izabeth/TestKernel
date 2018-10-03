@@ -94,6 +94,12 @@
     <CleanCommandLine>
     </CleanCommandLine>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <RemoteBuildCommandLine>make kernel.elf</RemoteBuildCommandLine>
+    <RemoteReBuildCommandLine>make rebuild</RemoteReBuildCommandLine>
+    <RemoteCleanCommandLine>make clean</RemoteCleanCommandLine>
+    <RemoteBuildOutputs>/home/user/projects/TestKernel1/kernel.elf</RemoteBuildOutputs>
+  </PropertyGroup>
   <ItemGroup>
     <ClCompile Include="makefile" />
     <ClCompile Include="src\arch\ia32\autoResetEvent.c" />
