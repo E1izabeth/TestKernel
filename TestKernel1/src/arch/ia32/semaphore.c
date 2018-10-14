@@ -13,7 +13,8 @@ static void wait(semaphore_t* sem)
 	else
 	{
 		slockRelease(&sem->spinlock);
-		sem->guard._->waitOne(&sem->guard);
+		//sem->guard._->waitOne(&sem->guard);
+		queue_waiting_thread(&sem->threadsQueue);
 		while (sem->counter == sem->max)
 		{
 
@@ -35,7 +36,8 @@ static int release(semaphore_t* sem)
 	--sem->counter;
 
 	slockRelease(&sem->spinlock);
-	sem->guard._->set(&sem->guard);
+	//sem->guard._->set(&sem->guard);
+	wake_queued_thread(&sem->threadsQueue);
 	return counter;
 }
 
@@ -47,6 +49,7 @@ semaphore_t newSemaphore(int max, int min)
 	semaphore_t sem;
 	sem._ = &semaphoreMethods;
 	sem.spinlock = slockInit();
+	sem.threadsQueue = init_threads_queue();
 	sem.guard = newAutoResetEvent(true);
 	sem.counter = max;
 	sem.max = max;

@@ -1,21 +1,20 @@
 #include <arch/ia32/autoResetEvent.h>
-#include <arch/ia32/threads.h>
 
 
 static autoResetEvent_t event_1;
 static autoResetEvent_t event_2;
-static byte stack[4][4096];
+static byte stack[6][4096];
 
 static slock_t lock;
 
 static void print(char* str)
 {
 	//slockCapture(&lock);
-
+	char buf[12];
 	for (int i = 0; i < get_current_thread_id(); i++)
 		puts(4, "\t");
 
-	puts(4, utoa(get_current_thread_id()));
+	puts(4, utoa(get_current_thread_id(), buf));
 	puts(4, ": ");
 	puts(4, str);
 	puts(4, "\n");
@@ -40,9 +39,9 @@ void autoResetEventExample()
 	event_1 = newAutoResetEvent(true);
 	event_2 = newAutoResetEvent(false);
 
-	for (int i = 1; i < 4; i++)
+	for (int i = 0; i < 2; i++)
 	{
-		create_thread(&ThreadProc, stack[i], 4096);
+		create_thread((void*)ThreadProc, stack[i], 4096);
 	}
 	
 	print("Threads created");
@@ -61,7 +60,7 @@ void autoResetEventExample()
 	
 	print("All threads are now waiting on AutoResetEvent #2.");
 
-	for (int i = 0; i < 3; i++)
+	for (int i = 0; i < 2; i++)
 	{
 		event_2._->set(&event_2);
 		print("Event 2 raised");

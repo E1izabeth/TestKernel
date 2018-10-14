@@ -1,9 +1,4 @@
-#include <arch/ia32/cpu/tables.h>
-#include <arch/ia32/display.h>
 #include <arch/ia32/threads.h>
-#include <types.h>
-#include <mem.h>
-#include <arch/ia32/cpu/cpu.h>
 
 extern raw_selector_t codeSelector, dataSelector;
 
@@ -22,7 +17,7 @@ void threading_start()
 	threading_enabled = true;
 }
 
-// TODO: ask timer about time
+
 void sleep(int mills)
 {
 	thread_t* thread = get_thread();
@@ -151,6 +146,31 @@ void wake_queued_thread(sleeping_threads_queue_t* q)
 	slockRelease(&q->lock);
 }
 
+void wake_queued_threads(sleeping_threads_queue_t* q)
+{
+	slockCapture(&q->lock);
+
+	sleeping_thread_entry_t* l = q->head;
+
+	while (l != 0)
+	{
+		int threadId = l->threadId;
+
+		sleeping_thread_entry_t* next = l->next;
+		q->head = next;
+
+		if (next == 0)
+			q->tail = 0;
+
+		q->count--;
+
+		wake_thread(threadId);
+		l = q->head;
+	}
+
+	slockRelease(&q->lock);
+}
+
 void queue_waiting_thread(sleeping_threads_queue_t* q)
 {
 	slockCapture(&q->lock);
@@ -187,7 +207,7 @@ int create_thread(void* (*start_function)(void*), void* stPointer, int stackSize
 	byte* stackPtr = ((byte*)stPointer) + stackSize;
 	stackPtr -= sizeof(registers_t);
 
-	thread_t* th = &threads[currThreadsCount];
+	thread_t* th = (thread_t*)&threads[currThreadsCount];
 	th->stackPtr = stackPtr;
 	th->id = currThreadsCount;
 	th->isUnderSheduling = true;
@@ -197,11 +217,11 @@ int create_thread(void* (*start_function)(void*), void* stPointer, int stackSize
 	registers_t* regs = (registers_t*)stackPtr;
 	memset(regs, 0, sizeof(registers_t));
 
-	regs->gen_regs.esp = stackPtr + sizeof(u32) + sizeof(registers_generic_t);
+	regs->gen_regs.esp = (u32)(stackPtr + sizeof(u32) + sizeof(registers_generic_t));
 	regs->gen_regs.ebp = 0;
 	regs->eflags = 0x202;
 
-	regs->eip = th_main_func;
+	regs->eip = (u32)(void*)th_main_func;
 	regs->cs = (u32)codeSelector.bits;	//0x18
 	// regs->ss = (u32)dataSelector.bits;	//0x20
 	regs->ds = (u32)dataSelector.bits;	//0x20
@@ -226,14 +246,14 @@ void change_thread(registers_t** regs)
 	if (!threading_enabled)
 		return;
 	
-	threads[currThreadIndex].stackPtr = *regs;
+	threads[currThreadIndex].stackPtr = (byte*)*regs;
 	
 	do
 	{
 		currThreadIndex = (currThreadIndex + 1) % currThreadsCount;
 	} while (!threads[currThreadIndex].isUnderSheduling);
 
-	*regs = threads[currThreadIndex].stackPtr;
+	*regs = (registers_t*)threads[currThreadIndex].stackPtr;
 }
 
 #define	_spin_try_lock(p)\

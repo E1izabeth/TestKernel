@@ -5,6 +5,7 @@
 typedef struct autoResetEvent_t {
 	struct autoResetEventMethods_t* _;
 	slock_t signal;
+	sleeping_threads_queue_t threadsQueue;
 } autoResetEvent_t;
 
 typedef void(*autoResetEventMethod_f)(autoResetEvent_t* ev);

@@ -1,5 +1,4 @@
 #include <arch/ia32/mutex.h>
-#include <arch/ia32/threads.h>
 
 
 static mutex_t mut;
@@ -10,11 +9,12 @@ static slock_t lock;
 static void print(char* str)
 {
 	//slockCapture(&lock);
+	char buff[12];
 
 	for (int i = 0; i < get_current_thread_id(); i++)
 		puts(4, "\t");
 
-	puts(4, utoa(get_current_thread_id()));
+	puts(4, utoa(get_current_thread_id(), buff));
 	puts(4, ": ");
 	puts(4, str);
 	puts(4, "\n");
@@ -61,7 +61,7 @@ static void print(char* str)
 		// Create the threads that will use the protected resource.
 		for (int i = 0; i < numThreads; i++)
 		{
-			create_thread(ThreadProc, stack[i], sizeof(stack[i]));
+			create_thread((void*)ThreadProc, stack[i], sizeof(stack[i]));
 		}
 
 		// The main thread exits, but the application continues to

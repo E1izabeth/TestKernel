@@ -64,7 +64,7 @@ void init_directory()
 		entry.isExpanded = 0;
 		entry.isGlobal = 0;
 		entry.customBits = 0;
-		entry.physicalAddress = &directory.tables[i];
+		entry.physicalAddress = (uint)&directory.tables[i];
 		
 		directory.catalog.pages[i] = encodePageTableEntry(entry);
 

@@ -1,8 +1,11 @@
 #ifndef THREADS_H
 #define THREADS_H
 
-#include <types.h>
 #include <arch/ia32/cpu/tables.h>
+#include <arch/ia32/cpu/cpu.h>
+#include <arch/ia32/display.h>
+#include <mem.h>
+#include <types.h>
 
 #define DEFAULT_STACK_SIZE 4096
 #define MAX_TOTAL_THREADS 200
@@ -63,6 +66,7 @@ typedef struct sleeping_threads_queue_t {
 
 sleeping_threads_queue_t init_threads_queue();
 void wake_queued_thread(sleeping_threads_queue_t* q);
+void wake_queued_threads(sleeping_threads_queue_t* q);
 void queue_waiting_thread(sleeping_threads_queue_t* q);
 
 #endif

@@ -1,7 +1,5 @@
 #include <arch/ia32/monitor.h>
 
-
-
 static bool releaseImpl(monitor_t* mon)
 {
 	if (mon->ownerThreadId == get_current_thread_id())
@@ -12,7 +10,8 @@ static bool releaseImpl(monitor_t* mon)
 		{
 			mon->ownerThreadId = -1;
 
-			mon->releaseSignal._->set(&mon->releaseSignal);
+			wake_queued_thread(&mon->threadsQueueRelease);
+			//mon->releaseSignal._->set(&mon->releaseSignal);
 		}
 	}
 	else
@@ -40,7 +39,8 @@ void captureImpl(monitor_t* mon)
 		while (mon->ownerThreadId != -1)
 		{
 			slockRelease(&mon->lock);
-			mon->releaseSignal._->wait(&mon->releaseSignal);
+			//mon->releaseSignal._->wait(&mon->releaseSignal);
+			queue_waiting_thread(&mon->threadsQueueRelease);
 			slockCapture(&mon->lock);
 
 		}
@@ -66,7 +66,8 @@ static bool wait(monitor_t* mon)
 			releaseImpl(mon);
 			slockRelease(&mon->lock);
 
-			mon->pulseSignal._->wait(&mon->pulseSignal);
+			queue_waiting_thread(&mon->threadsQueuePulse);
+			//mon->pulseSignal._->wait(&mon->pulseSignal);
 
 			slockCapture(&mon->lock);
 		} while (mon->isMultiPulse || (mon->isPulseHandled && !mon->isMultiPulse));
@@ -94,7 +95,8 @@ static void notify(monitor_t* mon)
 	slockCapture(&mon->lock);
 	mon->isMultiPulse = false;
 	mon->isPulseHandled = false;
-	mon->pulseSignal._->set(&mon->pulseSignal);
+	wake_queued_thread(&mon->threadsQueuePulse);
+	//mon->pulseSignal._->set(&mon->pulseSignal);
 	slockRelease(&mon->lock);
 }
 
@@ -103,7 +105,8 @@ static void notifyAll(monitor_t* mon)
 	slockCapture(&mon->lock); 
 	mon->isMultiPulse = true;
 	mon->isPulseHandled = false;
-	mon->pulseSignal._->set(&mon->pulseSignal);
+	wake_queued_thread(&mon->threadsQueuePulse);
+	//mon->pulseSignal._->set(&mon->pulseSignal);
 	slockRelease(&mon->lock);
 }
 
@@ -120,5 +123,7 @@ monitor_t newMonitor()
 	mon.pulseSignal = newManualResetEvent(false);
 	mon.releaseSignal = newManualResetEvent(false);
 	mon.lock = slockInit();
+	mon.threadsQueuePulse = init_threads_queue();
+	mon.threadsQueueRelease = init_threads_queue();
 	return mon;
 }

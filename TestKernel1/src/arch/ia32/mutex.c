@@ -1,5 +1,4 @@
 #include <arch/ia32/mutex.h>
-#include <arch/ia32/threads.h>
 
 static void wait(mutex_t* mut)
 {
@@ -50,7 +49,6 @@ static void release(mutex_t* mut)
 	}
 
 	slockRelease(&mut->lock);
-	return released;
 }
 
 mutexMethods_t mutexMethods = { wait, release };
@@ -66,13 +64,3 @@ mutex_t newMutex()
 	mut.threadsQueue = init_threads_queue();
 	return mut;
 }
-/*
-mutex_t* allocMutex(int max, int min)
-{
-	mutex_t* ptr = (mutex_t*)malloc(sizeof(mutex_t));
-
-	*ptr = newMutex(max, min);
-
-	return ptr;
-}
-*/

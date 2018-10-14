@@ -1,7 +1,4 @@
-#include <arch/ia32/cpu/tables.h>
 #include <arch/ia32/cpu/cpu.h>
-#include <arch/ia32/display.h>
-#include <arch/ia32/threads.h>
 
 extern display_t display;
 
@@ -9,6 +6,7 @@ terminal_t terminals[NUM_TERMINALS];
 
 void irq_handler(registers_t* regs)
 {
+	char buff[12];
 	if (regs->int_no == 32)
 	{
 		change_thread(&regs);
@@ -16,7 +14,7 @@ void irq_handler(registers_t* regs)
 	else if (regs->int_no != 32 && regs->int_no != 33)
 	{
 		puts(display.tmp_terminal_num, "recieved interrupt: ");
-		puts(display.tmp_terminal_num, itoa(regs->int_no));
+		puts(display.tmp_terminal_num, itoa(regs->int_no, buff));
 		puts(display.tmp_terminal_num, "\n");
 	}
 	
@@ -38,9 +36,9 @@ void irq_handler(registers_t* regs)
 		else if (x < 128)
 		{
 			puts(display.tmp_terminal_num, "recieved interrupt: ");
-			puts(display.tmp_terminal_num, itoa(regs->int_no));
+			puts(display.tmp_terminal_num, itoa(regs->int_no, buff));
 			puts(display.tmp_terminal_num, "  You pressed key with scancode ");
-			puts(display.tmp_terminal_num, utoa(x));
+			puts(display.tmp_terminal_num, utoa(x, buff));
 			puts(display.tmp_terminal_num, "\n");
 		}
 	}

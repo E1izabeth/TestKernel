@@ -95,10 +95,11 @@
     </CleanCommandLine>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <RemoteBuildCommandLine>make kernel.elf</RemoteBuildCommandLine>
+    <RemoteBuildCommandLine>make rebuild</RemoteBuildCommandLine>
     <RemoteReBuildCommandLine>make rebuild</RemoteReBuildCommandLine>
     <RemoteCleanCommandLine>make clean</RemoteCleanCommandLine>
     <RemoteBuildOutputs>/home/user/projects/TestKernel1/kernel.elf</RemoteBuildOutputs>
+    <ProjectPublicIncludePath>$(ProjectDir)include;$(ProjectPublicIncludePath)</ProjectPublicIncludePath>
   </PropertyGroup>
   <ItemGroup>
     <ClCompile Include="makefile" />

@@ -8,6 +8,7 @@ typedef struct semaphore_t {
 	int max;
 	int min;
 	int counter;
+	sleeping_threads_queue_t threadsQueue;
 	autoResetEvent_t guard;
 	slock_t spinlock;
 } semaphore_t;

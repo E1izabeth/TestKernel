@@ -6,7 +6,7 @@
 #include <arch/ia32/autoResetEvent.h>
 #include <arch/ia32/display.h>
 #include <arch/ia32/monitor.h>
-
+#include <mem.h>
 
 // TODO: refactor threading and displays
 
@@ -57,8 +57,35 @@ void thread2()
 	}
 }
 
+void print(char* str)
+{
+	puts(2, str);
+}
 
-void kernel_main(struct multiboot_info multiboot)
+void printMultibootInfo(struct multiboot_info *info)
+{
+	char buff[20];
+	print("flags: "); print(utox(info->flags, buff)); print("\n");
+	if (info->flags >> 0 & 0x01)
+	{
+		print("mem lower: "); print(utox(info->mem_lower * 1024, buff)); print("\n");
+		print("mem upper: "); print(utox(info->mem_upper * 1024, buff)); print("\n");
+	}
+	if (info->flags >> 6 & 0x01)
+	{
+		for (multiboot_memory_map_t *entry = (multiboot_memory_map_t*)(void*)info->mmap_addr;
+			 (int)entry < (info->mmap_addr + info->mmap_length);
+			 entry = (multiboot_memory_map_t*)((void*)entry + entry->size + 4))
+		{
+			print("addr: "); print(ultox(entry->addr, buff)); print("\n");
+			print("  length: "); print(ultox(entry->len, buff)); print("\n");
+			print("  type: "); print(utox(entry->type, buff)); print("\n");
+		}
+	}
+	print("cmdline: "); print((char*)info->cmdline); print("\n");
+}
+
+void kernel_main(struct multiboot_info *multiboot)
 {
 	init_main_thread();
 	// lock = slockInit();
@@ -71,9 +98,11 @@ void kernel_main(struct multiboot_info multiboot)
 	
 	threading_start();
 	
-	mutexExample();
+	autoResetEventExample();
 	//create_thread(thread1, th1Stack, sizeof(th1Stack));
 	//create_thread(thread2, th2Stack, sizeof(th2Stack));
+
+	printMultibootInfo(multiboot);
 
 	puts(1, "term 1\n");
 	puts(2, "term 2\n");

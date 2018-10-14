@@ -1,6 +1,8 @@
 #pragma once
 #include <types.h>
 #include <arch/ia32/threads.h>
+#include <arch/ia32/display.h>
+#include <mem.h>
 
 
 typedef struct manualResetEvent_t {
@@ -8,6 +10,7 @@ typedef struct manualResetEvent_t {
 	slock_t signal;
 	slock_t lock;
 	bool isSet;
+	sleeping_threads_queue_t threadsQueue;
 } manualResetEvent_t;
 
 typedef void(*manualResetEventMethod_f)(manualResetEvent_t* ev);
