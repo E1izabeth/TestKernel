@@ -109,12 +109,13 @@ void kernel_main(struct multiboot_info *multiboot)
 	puts(3, "term 3\n");
 	puts(4, "term 4\n");
 	puts(5, "term 5\n");
-	
+
+
 	//asm("int3");
 	for (int i = 0; i < 1000000; i++)
 	{
-
 	}
+
 	for (;;)
 		puts(0, "main\n");
 	

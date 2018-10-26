@@ -24,25 +24,27 @@ static void wait(semaphore_t* sem)
 
 }
 
-static int release(semaphore_t* sem)
+static void release(semaphore_t* sem)
 {
 	slockCapture(&sem->spinlock);
 	int counter = sem->counter;
 	if (sem->counter < sem->min)
 	{
-		return -1;
+		// return -1;
 		//throw new InvalidOperationException("Semaphore full");
 	}
-	--sem->counter;
+	else
+	{
+		--sem->counter;
 
-	slockRelease(&sem->spinlock);
-	//sem->guard._->set(&sem->guard);
-	wake_queued_thread(&sem->threadsQueue);
-	return counter;
+		slockRelease(&sem->spinlock);
+		//sem->guard._->set(&sem->guard);
+		wake_queued_thread(&sem->threadsQueue);
+		// return counter;
+	}
 }
 
-
-semaphoreMethods_t semaphoreMethods = { release, wait };
+semaphoreMethods_t semaphoreMethods = { &release, &wait };
 
 semaphore_t newSemaphore(int max, int min)
 {

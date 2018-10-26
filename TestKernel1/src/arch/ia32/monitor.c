@@ -28,7 +28,7 @@ static void release(monitor_t* mon)
 	slockRelease(&mon->lock);
 }
 
-void captureImpl(monitor_t* mon)
+static void captureImpl(monitor_t* mon)
 {
 	if (mon->ownerThreadId == get_current_thread_id())
 	{
@@ -56,7 +56,7 @@ void captureImpl(monitor_t* mon)
 }
 
 
-static bool wait(monitor_t* mon)
+static void wait(monitor_t* mon)
 {
 	slockCapture(&mon->lock);
 	if (mon->ownerThreadId == get_current_thread_id())
@@ -77,10 +77,10 @@ static bool wait(monitor_t* mon)
 	}
 	else
 	{
-		return false;
+		// return false;
 	}
 	slockRelease(&mon->lock);
-	return true;
+	// return true;
 }
 
 static void capture(monitor_t* mon)

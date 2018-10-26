@@ -22,7 +22,6 @@ enum threadState
 typedef struct
 {
 	// registers_t regs;
-
 	byte* stackPtr;
 	int id;
 	bool isUnderSheduling;

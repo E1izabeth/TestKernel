@@ -119,6 +119,7 @@
     <ClCompile Include="src\arch\ia32\mutexExample.c" />
     <ClCompile Include="src\arch\ia32\semaphore.c" />
     <ClCompile Include="src\arch\ia32\monitorExample.c" />
+    <ClCompile Include="src\arch\ia32\vmem.c" />
     <ClCompile Include="src\main.c" />
     <ClCompile Include="src\mem.c" />
     <ClCompile Include="src\arch\ia32\threads.c" />
@@ -146,6 +147,7 @@
     <ClInclude Include="include\arch\ia32\semaphore.h" />
     <ClInclude Include="include\arch\ia32\syncObjBaseDemo.h" />
     <ClInclude Include="include\arch\ia32\threads.h" />
+    <ClInclude Include="include\arch\ia32\vmem.h" />
     <ClInclude Include="include\mem.h" />
     <ClInclude Include="include\types.h" />
   </ItemGroup>

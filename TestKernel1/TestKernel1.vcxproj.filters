@@ -49,6 +49,7 @@
     <ClCompile Include="src\arch\ia32\manualResetEventExample.c" />
     <ClCompile Include="src\arch\ia32\monitorExample.c" />
     <ClCompile Include="src\arch\ia32\mutexExample.c" />
+    <ClCompile Include="src\arch\ia32\vmem.c" />
   </ItemGroup>
   <ItemGroup>
     <None Include="sections-layout" />
@@ -115,6 +116,7 @@
       <Filter>include\arch\ia32</Filter>
     </ClInclude>
     <ClInclude Include="include\arch\ia32\syncObjBaseDemo.h" />
+    <ClInclude Include="include\arch\ia32\vmem.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="include">

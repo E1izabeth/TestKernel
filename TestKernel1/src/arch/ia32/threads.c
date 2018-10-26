@@ -68,7 +68,7 @@ bool wake_thread(int id)
 
 	if (id >= 0 && id < currThreadsCount)
 	{
-		thread_t* th = &threads[id];
+		volatile thread_t* th = &threads[id];
 		if (th->state == THREADSTATE_WAITSLEEPJOIN && !th->isUnderSheduling)
 		{
 			th->state = THREADSTATE_RUNNING;
@@ -233,7 +233,7 @@ int create_thread(void* (*start_function)(void*), void* stPointer, int stackSize
 
 thread_t* get_thread()
 {
-	return &threads[currThreadIndex];
+	return (thread_t*)&threads[currThreadIndex];
 }
 
 int get_current_thread_id()

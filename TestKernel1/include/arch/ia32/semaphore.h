@@ -13,7 +13,7 @@ typedef struct semaphore_t {
 	slock_t spinlock;
 } semaphore_t;
 
-typedef void(*semaphoreMethod_f)(semaphore_t sem);
+typedef void(*semaphoreMethod_f)(semaphore_t* sem);
 
 typedef struct semaphoreMethods_t {
 	semaphoreMethod_f wait, release;
