@@ -13,7 +13,7 @@ static void print(char* str)
 	for (int i = 0; i < get_current_thread_id(); i++)
 		puts(4, "\t");
 
-	puts(4, utoa(get_current_thread_id(), buff));
+	puts(4, utoa(get_current_thread_id(), buff, 12));
 	puts(4, ": ");
 	puts(4, str);
 	puts(4, "\n");
@@ -33,7 +33,7 @@ static void run()
 		print("own:: Running again\n");
 	}
 	print("own:: data.value = ");
-	puts(4, utoa(value,buff));
+	puts(4, utoa(value, buff, 12));
 	sync._->release(&sync);
 }
 

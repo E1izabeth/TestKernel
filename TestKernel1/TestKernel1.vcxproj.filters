@@ -49,6 +49,10 @@
     <ClCompile Include="src\arch\ia32\manualResetEventExample.c" />
     <ClCompile Include="src\arch\ia32\monitorExample.c" />
     <ClCompile Include="src\arch\ia32\mutexExample.c" />
+    <ClCompile Include="tmp\pheap.c" />
+    <ClCompile Include="tmp\paging.c" />
+    <ClCompile Include="tmp\ordered_array.c" />
+    <ClCompile Include="tmp\task.c" />
     <ClCompile Include="src\arch\ia32\vmem.c" />
   </ItemGroup>
   <ItemGroup>
@@ -62,9 +66,6 @@
     <None Include="scripts\start-qemu-for-debugger.sh">
       <Filter>scripts</Filter>
     </None>
-    <None Include="src\startup.asm">
-      <Filter>src</Filter>
-    </None>
     <None Include="src\arch\ia32\cpu\idt.asm">
       <Filter>src\arch\ia32\cpu</Filter>
     </None>
@@ -74,6 +75,10 @@
     <None Include="scripts\start-qemu-for-debugger-ui-loop.sh">
       <Filter>scripts</Filter>
     </None>
+    <None Include="src\startup.asm">
+      <Filter>src</Filter>
+    </None>
+    <None Include="tmp\process.asm" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\mem.h">
@@ -116,6 +121,11 @@
       <Filter>include\arch\ia32</Filter>
     </ClInclude>
     <ClInclude Include="include\arch\ia32\syncObjBaseDemo.h" />
+    <ClInclude Include="include\arch\ia32\cpu\idt.h" />
+    <ClInclude Include="tmp\paging.h" />
+    <ClInclude Include="tmp\ordered_array.h" />
+    <ClInclude Include="tmp\pheap.h" />
+    <ClInclude Include="tmp\task.h" />
     <ClInclude Include="include\arch\ia32\vmem.h" />
   </ItemGroup>
   <ItemGroup>

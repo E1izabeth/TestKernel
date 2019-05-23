@@ -23,22 +23,25 @@ void* memset(void* to, byte value, int length)
 	return dst;
 }
 
-char *utoa(uint i, char* buff)
+char *utoa(uint i, char* buff, int buffLen)
 {
-	memset(buff, 0, 12);
+	memset(buff, 0, buffLen);
 	unsigned int u = i;
 
 	*buff = '\0';
-	do
+	--buffLen;
+	do {
 		*--buff = '0' + (u % 10);
-	while (u /= 10);
+		--buffLen;
+		u /= 10;
+	} while (u > 0 && buffLen > 0);
 
 	return buff;
 }
 
-char* itoa(int i, char* buff)
+char* itoa(int i, char* buff, int buffLen)
 {
-	memset(buff, 0, 12);
+	memset(buff, 0, buffLen);
 	unsigned int u;
 	bool minus = 0;
 
@@ -50,10 +53,15 @@ char* itoa(int i, char* buff)
 	else
 		u = i;
 
+	buff += buffLen - 1;
+
 	*buff = '\0';
-	do
+	--buffLen;
+	do {
 		*--buff = '0' + (u % 10);
-	while (u /= 10);
+		--buffLen;
+		u /= 10;
+	} while (u > 0 && buffLen > 0);
 
 	if (minus)
 		*--buff = '-';
@@ -74,11 +82,11 @@ int atoi(char* s, int n)
 
 static char _hexMap[] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f' };
 
-char* utox(uint n, char* buff)
+char* utox(uint n, char* buff, int buffLength)
 {
-	memset(buff, 0, 9);
+	memset(buff, 0, buffLength);
 
-	for (int i = 0, j = 0; i < 32; i += 4, j++)
+	for (int i = 0, j = 0; i < 32 && j < buffLength; i += 4, j++)
 	{
 		uint q = (n >> (28 - i)) & 0x0f;
 		buff[j] = _hexMap[q];
@@ -87,11 +95,11 @@ char* utox(uint n, char* buff)
 	return buff;
 }
 
-char* ultox(ulong n, char* buff)
+char* ultox(ulong n, char* buff, int buffLength)
 {
-	memset(buff, 0, 17);
+	memset(buff, 0, buffLength);
 
-	for (int i = 0, j = 0; i < 64; i += 4, j++)
+	for (int i = 0, j = 0; i < 64 && j < buffLength; i += 4, j++)
 	{
 		uint q = (n >> (60 - i)) & 0x0f;
 			buff[j] = _hexMap[q];

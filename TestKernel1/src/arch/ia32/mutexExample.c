@@ -14,7 +14,7 @@ static void print(char* str)
 	for (int i = 0; i < get_current_thread_id(); i++)
 		puts(4, "\t");
 
-	puts(4, utoa(get_current_thread_id(), buff));
+	puts(4, utoa(get_current_thread_id(), buff, 12));
 	puts(4, ": ");
 	puts(4, str);
 	puts(4, "\n");

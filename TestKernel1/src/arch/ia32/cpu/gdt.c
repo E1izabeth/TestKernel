@@ -63,8 +63,8 @@ gdt_ptr_t init_gdt()
 	seg.data32_descr = makeDescriptor(compileDescriptor(0, 0xFFFFFFFF, 0xF2, 0xCF));//F2 CF
 	
 
-	codeSelector = compileSelector(makeSelector(3, false, 0));
-	dataSelector = compileSelector(makeSelector(4, false, 0));
+	codeSelector = compile_selector(make_selector(3, false, 0));
+	dataSelector = compile_selector(make_selector(4, false, 0));
 
 	asm("lgdt 0(,%0,)"::"a"(&ptr));
 	asm("movw %0, %%ax" :: "r"(dataSelector));
@@ -85,13 +85,13 @@ gdt_ptr_t init_gdt()
 	return ptr;
 }
 
-selector_info_t makeSelector(ushort index, bool useLdt, byte rplLevel)
+selector_info_t make_selector(ushort index, bool useLdt, byte rplLevel)
 {
 	selector_info_t info = { index, useLdt, rplLevel };
 	return info;
 }
 
-raw_selector_t compileSelector(selector_info_t info)
+raw_selector_t compile_selector(selector_info_t info)
 {
 	raw_selector_t s = { 0 };
 	s.bits |= (info.index << 3) & 0xfff8; // bits 15-3
@@ -100,7 +100,7 @@ raw_selector_t compileSelector(selector_info_t info)
 	return s;
 }
 
-selector_info_t parseSelector(raw_selector_t s)
+selector_info_t parse_selector(raw_selector_t s)
 {
 	selector_info_t info;
 	info.index = (s.bits & 0xfff8) >> 3;

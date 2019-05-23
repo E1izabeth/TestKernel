@@ -79,13 +79,13 @@ typedef struct
 typedef struct
 {
 	page_table_entry_t pages[1024];
-} PageTable;
+} page_table;
 
 typedef struct
 {
-	PageTable catalog;
-	PageTable tables[1024];
-} PageDirectory;
+	page_table catalog;
+	page_table tables[1024];
+} page_directory;
 
 typedef struct
 {
@@ -117,14 +117,18 @@ typedef struct
 
 #pragma pack(pop)
 
-selector_info_t makeSelector(ushort index, bool useLdt, byte rplLevel);
-raw_selector_t compileSelector(selector_info_t info);
-selector_info_t parseSelector(raw_selector_t s);
+selector_info_t make_selector(ushort index, bool useLdt, byte rplLevel);
+raw_selector_t compile_selector(selector_info_t info);
+selector_info_t parse_selector(raw_selector_t s);
 
 extern void idt_flush(u32);
 extern void gdt_flush(u32);
 
 void init_directory();
 
+void set_page_table_entry(page_table_entry_t* table, int index, page_table_entry_info_t info);
+page_table_entry_info_t get_page_table_entry(page_table_entry_t* table, int index);
+page_table_entry_t encode_page_table_entry(page_table_entry_info_t info);
+page_table_entry_info_t decode_page_table_entry(page_table_entry_t e);
 
 #endif

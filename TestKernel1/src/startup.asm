@@ -6,6 +6,7 @@ CHECKSUM               equ -(MULTIBOOT_HEADER_MAGIC + MULTIBOOT_HEADER_FLAGS)
 ; multiboot-заголовок (nasm-синтаксис)
 
 ; [SECTION .multiboot_header]
+[GLOBAL _multiboot_header]
 _multiboot_header:
         align 4
         dd    MULTIBOOT_HEADER_MAGIC

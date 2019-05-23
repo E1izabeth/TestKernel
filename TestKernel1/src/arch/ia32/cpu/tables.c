@@ -1,6 +1,6 @@
 ﻿#include <arch/ia32/cpu/tables.h>
 
-page_table_entry_t encodePageTableEntry(page_table_entry_info_t info)
+page_table_entry_t encode_page_table_entry(page_table_entry_info_t info)
 {
 	page_table_entry_t entry = { 0 };
 
@@ -19,7 +19,7 @@ page_table_entry_t encodePageTableEntry(page_table_entry_info_t info)
 	return entry;
 }
 
-page_table_entry_info_t decodePageTableEntry(page_table_entry_t e)
+page_table_entry_info_t decode_page_table_entry(page_table_entry_t e)
 {
 	page_table_entry_info_t info;
 	info.isPresented = ((e.bits >> 0) & 0x1) !=0;
@@ -37,17 +37,17 @@ page_table_entry_info_t decodePageTableEntry(page_table_entry_t e)
 	return info;
 }
 
-void setPageTableEntry(page_table_entry_t* table, int index, page_table_entry_info_t info)
+void set_page_table_entry(page_table_entry_t* table, int index, page_table_entry_info_t info)
 {
-	table[index] = encodePageTableEntry(info);
+	table[index] = encode_page_table_entry(info);
 }
 
-page_table_entry_info_t getPageTableEntry(page_table_entry_t* table, int index)
+page_table_entry_info_t get_page_table_entry(page_table_entry_t* table, int index)
 {
-	return decodePageTableEntry(table[index]);
+	return decode_page_table_entry(table[index]);
 }
 
-PageDirectory directory __attribute__((aligned(4096)));
+page_directory directory __attribute__((aligned(4096)));
 
 void init_directory()
 {
@@ -66,7 +66,7 @@ void init_directory()
 		entry.customBits = 0;
 		entry.physicalAddress = (uint)&directory.tables[i];
 		
-		directory.catalog.pages[i] = encodePageTableEntry(entry);
+		directory.catalog.pages[i] = encode_page_table_entry(entry);
 
 		for (int j = 0; j < 1024; j++)
 		{
@@ -83,14 +83,25 @@ void init_directory()
 			entry.customBits = 0;
 			entry.physicalAddress = i * 1024 * 4096 + j * 4096;
 
-			directory.tables[i].pages[j] = encodePageTableEntry(entry);
+			directory.tables[i].pages[j] = encode_page_table_entry(entry);
 		}
 	}
 
 	asm("movl %0, %%eax" :: "a"(&directory.catalog));
 	asm("movl %eax, %cr3");
 	//asm("orl 0x80000000, %cr0");
+
+	/*
 	asm("movl %cr0, %eax");
 	asm("orl 0x80000000, %eax");
+	asm("movl %eax, %cr0");
+	*/
+	
+	int n;
+
+	asm("movl %cr0, %eax");
+	asm("movl %%eax, %0" : "=r"(n) :);
+	n |= 0x80000000;
+	asm("movl %0, %%eax" :: "r"(n));
 	asm("movl %eax, %cr0");
 }

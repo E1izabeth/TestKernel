@@ -11,13 +11,18 @@ void irq_handler(registers_t* regs)
 	{
 		change_thread(&regs);
 	}
+	//else if (regs->int_no == 14)
+	//{
+	//	page_fault(regs);
+	//}
 	else if (regs->int_no != 32 && regs->int_no != 33)
 	{
 		puts(display.tmp_terminal_num, "recieved interrupt: ");
-		puts(display.tmp_terminal_num, itoa(regs->int_no, buff));
+		puts(display.tmp_terminal_num, itoa(regs->int_no, buff, 12));
 		puts(display.tmp_terminal_num, "\n");
 	}
-	
+
+
 
 	if (regs->int_no >= 40)
 	{
@@ -36,9 +41,9 @@ void irq_handler(registers_t* regs)
 		else if (x < 128)
 		{
 			puts(display.tmp_terminal_num, "recieved interrupt: ");
-			puts(display.tmp_terminal_num, itoa(regs->int_no, buff));
+			puts(display.tmp_terminal_num, itoa(regs->int_no, buff, 12));
 			puts(display.tmp_terminal_num, "  You pressed key with scancode ");
-			puts(display.tmp_terminal_num, utoa(x, buff));
+			puts(display.tmp_terminal_num, utoa(x, buff, 12));
 			puts(display.tmp_terminal_num, "\n");
 		}
 	}

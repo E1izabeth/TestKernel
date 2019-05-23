@@ -95,13 +95,11 @@ idt_ptr_t init_idt()
 
 	ptr.limit = sizeof(idt_descriptor_t) * handlersCount - 1;
 	ptr.adr = (uint)&idt_seg;
-
-		
 	
 	for (uint i = 0; i < handlersCount; i++)
 	{		
 		makeCustomHandler(&(custom_handlers[i]), i);
-		idt_set(i, (u32)&(custom_handlers[i]), compileSelector(makeSelector(3, false, 0)).bits, 0x8E);
+		idt_set(i, (u32)&(custom_handlers[i]), compile_selector(make_selector(3, false, 0)).bits, 0x8E);
 	}
 
 	PIC_remap(0x20, 0x28); //0x20 0x28

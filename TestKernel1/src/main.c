@@ -6,6 +6,8 @@
 #include <arch/ia32/autoResetEvent.h>
 #include <arch/ia32/display.h>
 #include <arch/ia32/monitor.h>
+#include <arch/ia32/multiboot/multiboot.h>
+#include <arch/ia32/cpu/tables.h>
 #include <mem.h>
 
 // TODO: refactor threading and displays
@@ -14,10 +16,12 @@ byte th1Stack[4096];
 byte th2Stack[4096];
 
 int sp = -1;
-int k=0;
+int k = 0;
 
 // slock_t lock;
 mutex_t _sectionMutex;
+extern uint placement_address;
+uint initial_esp;
 
 void thread_loop(int num, char* msg, bool isLooped)
 {
@@ -27,7 +31,7 @@ void thread_loop(int num, char* msg, bool isLooped)
 	{
 		// slockCapture(&lock);
 		_sectionMutex._->wait(&_sectionMutex);
-		
+
 		for (int i = 0; i < 10; i++)
 			puts(num, msg);
 
@@ -37,7 +41,7 @@ void thread_loop(int num, char* msg, bool isLooped)
 		_sectionMutex._->release(&_sectionMutex);
 
 		for (int i = 0; i < 100000000; i++);
-		
+
 		k = 1;
 		if (!isLooped)
 			break;
@@ -62,43 +66,156 @@ void print(char* str)
 	puts(2, str);
 }
 
+extern byte* _end;
+extern byte* _multiboot_header;
+
 void printMultibootInfo(struct multiboot_info *info)
 {
 	char buff[20];
-	print("flags: "); print(utox(info->flags, buff)); print("\n");
+	int l = 20;
+
+	print("flags: "); print(utox(info->flags, buff, l)); print("\n");
 	if (info->flags >> 0 & 0x01)
 	{
-		print("mem lower: "); print(utox(info->mem_lower * 1024, buff)); print("\n");
-		print("mem upper: "); print(utox(info->mem_upper * 1024, buff)); print("\n");
+		print("mem lower: "); print(utox(info->mem_lower * 1024, buff, l)); print("\n");
+		print("mem upper: "); print(utox(info->mem_upper * 1024, buff, l)); print("\n");
 	}
 	if (info->flags >> 6 & 0x01)
 	{
 		for (multiboot_memory_map_t *entry = (multiboot_memory_map_t*)(void*)info->mmap_addr;
-			 (int)entry < (info->mmap_addr + info->mmap_length);
-			 entry = (multiboot_memory_map_t*)((void*)entry + entry->size + 4))
+			(int)entry < (info->mmap_addr + info->mmap_length);
+			entry = (multiboot_memory_map_t*)((void*)entry + entry->size + 4))
 		{
-			print("addr: "); print(ultox(entry->addr, buff)); print("\n");
-			print("  length: "); print(ultox(entry->len, buff)); print("\n");
-			print("  type: "); print(utox(entry->type, buff)); print("\n");
+			print("addr: "); print(ultox(entry->addr, buff, l)); print("\n");
+			print("  length: "); print(ultox(entry->len, buff, l)); print("\n");
+			print("  type: "); print(utox(entry->type, buff, l)); print("\n");
 		}
 	}
 	print("cmdline: "); print((char*)info->cmdline); print("\n");
+
+
+	print("start: "); print(ultox((ulong)&_multiboot_header, buff, l)); print("\n");
+	print("end: "); print(ultox((ulong)&_end, buff, l)); print("\n");
+
 }
 
-void kernel_main(struct multiboot_info *multiboot)
+int align_to(int size, int alignment)
 {
+	return size + (alignment - ((size - 1) % alignment)) - 1;
+}
+
+void* get_free_page_address(struct multiboot_info *info)
+{
+	long s = 4096;
+
+	for (multiboot_memory_map_t *entry = (multiboot_memory_map_t*)(void*)info->mmap_addr;
+		(int)entry < (info->mmap_addr + info->mmap_length);
+		entry = (multiboot_memory_map_t*)((void*)entry + entry->size + 4))
+	{
+		int a_rn = align_to(entry->addr, s),
+			b_rn = entry->addr + entry->len,
+			a_m = &_multiboot_header,
+			b_m = align_to(&_end, s);
+				
+		if (entry->type == 1 && a_rn >= 1024*1024)
+		{
+			
+			if (a_m - a_rn > s)
+				return a_rn;
+			else if (b_rn - b_m > s)
+				return b_m;
+		}
+	}
+
+	return 0;
+}
+
+void* get_page_address( void* source, struct multiboot_info *info)
+{
+	long s = 4096;
+
+	for (multiboot_memory_map_t *entry = (multiboot_memory_map_t*)(void*)info->mmap_addr;
+		(int)entry < (info->mmap_addr + info->mmap_length);
+		entry = (multiboot_memory_map_t*)((void*)entry + entry->size + 4))
+	{
+		int a_rn = align_to(entry->addr, s),
+			b_rn = entry->addr + entry->len,
+			a_m = &_multiboot_header,
+			b_m = align_to(&_end, s);
+
+		if (entry->type == 1 && a_rn >= 1024 * 1024)
+		{
+
+			if (a_m - a_rn > s)
+				return a_rn;
+			else if (b_rn - b_m > s)
+				return b_m;
+		}
+	}
+
+	return 0;
+}
+
+
+int x = 10;
+
+void test(int *p)
+{
+	if (x == 10)
+	{
+		*p = 1;
+	}
+	else
+	{
+		*p = 0;
+	}
+}
+
+extern page_directory directory;
+
+
+void kernel_main(struct multiboot_info *multiboot, uint initial_stack)
+{
+	initial_esp = initial_stack;
+	int i;
 	init_main_thread();
 	// lock = slockInit();
 
 	//_sectionMutex = newMutex(1, 0);
 
 	//asm("movl %%esp, %0" : "=r"(esp));
-	
+
 	init_cpu();
-	
+
+	//ASSERT(multiboot->mods_count > 0);
+
+	// Start paging.
+	//initialise_paging();
+
+	// Start multitasking.
+	//initialise_tasking();
+
 	threading_start();
-	
-	autoResetEventExample();
+
+	// —оздаем новый процесс в новом адресном пространстве, который €вл€етс€ клоном текущего процесса.
+	//int _ret = fork();
+	//char* buff;
+	//puts(1, "fork() returned ");
+	//puts(1, utox(_ret, buff));
+	//puts(1, ", and getpid() returned ");
+	//puts(1, itoa(getpid(), buff));
+
+	//// —ледующий раздел кода не €вл€етс€ реентрантным, поскольку мы не должны прерывать его исполнение.
+	//asm volatile("cli");
+	//// —писок содержимого директори€ /
+	//puts(1, "\n11111============================================================================\n");
+	//puts(1, "\n22222============================================================================\n");
+	//puts(1, "\n");
+
+	//asm volatile("sti");
+
+
+	//autoResetEventExample();
 	//create_thread(thread1, th1Stack, sizeof(th1Stack));
 	//create_thread(thread2, th2Stack, sizeof(th2Stack));
 
@@ -112,13 +229,47 @@ void kernel_main(struct multiboot_info *multiboot)
 
 
 	//asm("int3");
-	for (int i = 0; i < 1000000; i++)
+	for (i = 0; i < 1000000; i++)
 	{
 	}
 
-	for (;;)
-		puts(0, "main\n");
+	char buff[20];
+	void* oldPageAddress = ((int)&x) / 4096 * 4096;
+	void* newPageAddress = get_free_page_address(multiboot);
+	memcpy(newPageAddress, oldPageAddress, 4096);
+
+	int x_mod = (int)&x - (int)oldPageAddress;
+	int* new_addr_x = newPageAddress + x_mod;
+	*new_addr_x = 5;
+
+	int catalog_entry = ((int)&x) / 4096 / 1024;
+	int page_entry = ((int)&x) / 4096 % 1204;
+
+	page_table_entry_t *entry = &directory.tables[catalog_entry].pages[page_entry];
+	page_table_entry_info_t info = decode_page_table_entry(*entry);
+
+	info.physicalAddress = newPageAddress;
+
+
+	int y;
+	test(&y);
+	puts(1, "test 1: ");
+	puts(1, itoa(y, buff, 20));
+	puts(1, ".\n");
 	
-	asm("hlt");
+	*entry = encode_page_table_entry(info);
+	//asm("mov %0, %%eax" :: "r"(&x));
+	// asm("invlpg (%0)" : : "r"(&x));
+	asm volatile("invlpg (%0)" : : "r"(&x));
+
+	test(&y);
+	puts(1, "test 2: ");
+	puts(1, itoa(y, buff, 20));
+	puts(1, ".\n");
+
+	puts(0, "main\n");
+
+	for (;;)
+		asm("hlt");
 }
 

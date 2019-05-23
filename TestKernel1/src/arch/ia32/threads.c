@@ -2,10 +2,10 @@
 
 extern raw_selector_t codeSelector, dataSelector;
 
-typedef struct StateInfo {
+typedef struct state_info {
 	int prev;
 	int retAddr;
-} StateInfo;
+} state_info;
 
 volatile thread_t threads[MAX_TOTAL_THREADS];
 volatile bool threading_enabled = false;
