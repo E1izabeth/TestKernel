@@ -89,13 +89,6 @@ void init_directory()
 
 	asm("movl %0, %%eax" :: "a"(&directory.catalog));
 	asm("movl %eax, %cr3");
-	//asm("orl 0x80000000, %cr0");
-
-	/*
-	asm("movl %cr0, %eax");
-	asm("orl 0x80000000, %eax");
-	asm("movl %eax, %cr0");
-	*/
 	
 	int n;
 

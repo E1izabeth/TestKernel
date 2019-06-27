@@ -130,7 +130,7 @@ void* get_free_page_address(struct multiboot_info *info)
 	return 0;
 }
 
-void* get_page_address( void* source, struct multiboot_info *info)
+void* get_page_address(void* source, struct multiboot_info *info)
 {
 	long s = 4096;
 
@@ -171,68 +171,10 @@ void test(int *p)
 	}
 }
 
-extern page_directory directory;
+extern page_directory current_directory;
 
-
-void kernel_main(struct multiboot_info *multiboot, uint initial_stack)
+void test_paging(struct multiboot_info *multiboot)
 {
-	initial_esp = initial_stack;
-	int i;
-	init_main_thread();
-	// lock = slockInit();
-
-	//_sectionMutex = newMutex(1, 0);
-
-	//asm("movl %%esp, %0" : "=r"(esp));
-
-	init_cpu();
-
-	//ASSERT(multiboot->mods_count > 0);
-
-	// Start paging.
-	//initialise_paging();
-
-	// Start multitasking.
-	//initialise_tasking();
-
-	threading_start();
-
-	// —оздаем новый процесс в новом адресном пространстве, который €вл€етс€ клоном текущего процесса.
-	//int _ret = fork();
-	//char* buff;
-	//puts(1, "fork() returned ");
-	//puts(1, utox(_ret, buff));
-	//puts(1, ", and getpid() returned ");
-	//puts(1, itoa(getpid(), buff));
-
-	//// —ледующий раздел кода не €вл€етс€ реентрантным, поскольку мы не должны прерывать его исполнение.
-	//asm volatile("cli");
-	//// —писок содержимого директори€ /
-	//puts(1, "\n11111============================================================================\n");
-	//puts(1, "\n22222============================================================================\n");
-	//puts(1, "\n");
-
-	//asm volatile("sti");
-
-
-	//autoResetEventExample();
-	//create_thread(thread1, th1Stack, sizeof(th1Stack));
-	//create_thread(thread2, th2Stack, sizeof(th2Stack));
-
-	printMultibootInfo(multiboot);
-
-	puts(1, "term 1\n");
-	puts(2, "term 2\n");
-	puts(3, "term 3\n");
-	puts(4, "term 4\n");
-	puts(5, "term 5\n");
-
-
-	//asm("int3");
-	for (i = 0; i < 1000000; i++)
-	{
-	}
-
 	char buff[20];
 	void* oldPageAddress = ((int)&x) / 4096 * 4096;
 	void* newPageAddress = get_free_page_address(multiboot);
@@ -245,27 +187,100 @@ void kernel_main(struct multiboot_info *multiboot, uint initial_stack)
 	int catalog_entry = ((int)&x) / 4096 / 1024;
 	int page_entry = ((int)&x) / 4096 % 1204;
 
-	page_table_entry_t *entry = &directory.tables[catalog_entry].pages[page_entry];
+	page_table_entry_t *entry = &current_directory.tables[catalog_entry].pages[page_entry];
 	page_table_entry_info_t info = decode_page_table_entry(*entry);
 
 	info.physicalAddress = newPageAddress;
-
 
 	int y;
 	test(&y);
 	puts(1, "test 1: ");
 	puts(1, itoa(y, buff, 20));
 	puts(1, ".\n");
-	
+
 	*entry = encode_page_table_entry(info);
-	//asm("mov %0, %%eax" :: "r"(&x));
-	// asm("invlpg (%0)" : : "r"(&x));
 	asm volatile("invlpg (%0)" : : "r"(&x));
 
 	test(&y);
 	puts(1, "test 2: ");
 	puts(1, itoa(y, buff, 20));
 	puts(1, ".\n");
+}
+
+u32 initial_esp;
+
+void move_stack(void *new_stack_start, u32 size)
+{
+	u32 i;
+	// ¬ыдел€ем немного места дл€ нового стека.
+	for (i = (u32)new_stack_start;
+		i >= ((u32)new_stack_start - size);
+		i -= 0x1000)
+	{
+		// —тек общего назначени€ используетс€ в пользовательском режиме.
+		
+		//alloc_frame(get_page(i, 1, current_directory), 0 /* User mode */, 1 /* Is writable */);
+	}
+
+	// ќбновление  TLB выполн€етс€ с помощью чтени€ и повторной записи адреса директори€ страниц.
+	u32 pd_addr;
+	asm volatile("mov %%cr3, %0" : "=r" (pd_addr));
+	asm volatile("mov %0, %%cr3" : : "r" (pd_addr));
+
+	// —тарые ESP и EBP, читаем из регистров.
+	u32 old_stack_pointer; asm volatile("mov %%esp, %0" : "=r" (old_stack_pointer));
+	u32 old_base_pointer;  asm volatile("mov %%ebp, %0" : "=r" (old_base_pointer));
+
+	u32 offset = (u32)new_stack_start - initial_esp;
+
+	u32 new_stack_pointer = old_stack_pointer + offset;
+	u32 new_base_pointer = old_base_pointer + offset;
+
+		//  опирование стека.
+	memcpy((void*)new_stack_pointer, (void*)old_stack_pointer, initial_esp - old_stack_pointer);
+
+	// ѕроходим по исходному стеку и копируем новые значени€ в новый стек.
+	for (i = (u32)new_stack_start; i > (u32)new_stack_start - size; i -= 4)
+	{
+		u32 tmp = *(u32*)i;
+		// ≈сли значение tmp попадает в диапазон адресов старого стека, мы полагаем, что это указатель базы
+		// и переопредел€ем его. ¬ результате, к сожалению, будет переопределено ЋёЅќ≈ значение в этом 
+		// диапазоне независимо от того, €вл€етс€ ли оно указателем базы или нет.
+		if ((old_stack_pointer < tmp) && (tmp < initial_esp))
+		{
+			tmp = tmp + offset;
+			u32 *tmp2 = (u32*)i;
+			*tmp2 = tmp;
+		}
+	}
+
+	// «амена стеков.
+	asm volatile("mov %0, %%esp" : : "r" (new_stack_pointer));
+	asm volatile("mov %0, %%ebp" : : "r" (new_base_pointer));
+}
+
+
+void kernel_main(struct multiboot_info *multiboot, uint initial_stack)
+{
+	initial_esp = initial_stack;
+	init_main_thread();
+	init_cpu();
+
+	threading_start();
+
+	printMultibootInfo(multiboot);
+
+	puts(1, "term 1\n");
+	puts(2, "term 2\n");
+	puts(3, "term 3\n");
+	puts(4, "term 4\n");
+	puts(5, "term 5\n");
+	puts(6, "term 6\n");
+	puts(7, "term 7\n");
+	puts(8, "term 8\n");
+	puts(9, "term 9\n");
+
+	test_paging(multiboot);
 
 	puts(0, "main\n");
 

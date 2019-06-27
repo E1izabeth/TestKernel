@@ -25,6 +25,7 @@ _start:
 	;push MULTIBOOT_HEADER_FLAGS
 	;push CHECKSUM
 	;push MULTIBOOT_MEMORY_INFO
+	push esp
 	push ebx
 	cli
 	call kernel_main
