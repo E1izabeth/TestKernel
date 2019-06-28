@@ -1,4 +1,5 @@
 #include <types.h>
+#include <arch/ia32/vmem.h>
 
 #ifndef TABLES_H
 #define TABLES_H

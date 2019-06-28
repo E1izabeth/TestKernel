@@ -219,7 +219,9 @@ void move_stack(void *new_stack_start, u32 size)
 	{
 		// —тек общего назначени€ используетс€ в пользовательском режиме.
 		
-		//alloc_frame(get_page(i, 1, current_directory), 0 /* User mode */, 1 /* Is writable */);
+		//TODO:define functions
+		//TODO: page manager
+		//alloc_page(get_page(i, 1, current_directory), 0 /* User mode */, 1 /* Is writable */);
 	}
 
 	// ќбновление  TLB выполн€етс€ с помощью чтени€ и повторной записи адреса директори€ страниц.
