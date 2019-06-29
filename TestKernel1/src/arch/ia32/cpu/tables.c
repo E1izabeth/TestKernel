@@ -191,6 +191,11 @@ page_table_entry_t alloc_page(int is_kernel, int is_writeable)
 		{
 			last_page_index = 0;
 			last_table_index++;
+			page_table_entry_info_t cat_entry = decode_page_table_entry(current_directory.catalog.pages[last_table_index]);
+			cat_entry.isPresented = 1;
+			cat_entry.isWriteable = (is_writeable == 1) ? 1 : 0;
+			cat_entry.isUserAccessible = (is_kernel == 1) ? 0 : 1;
+			current_directory.catalog.pages[last_table_index] = encode_page_table_entry(cat_entry);
 		}
 		else
 		{
@@ -203,6 +208,7 @@ page_table_entry_t alloc_page(int is_kernel, int is_writeable)
 	entry.isWriteable = (is_writeable == 1) ? 1 : 0;
 	entry.isUserAccessible = (is_kernel == 1) ? 0 : 1;
 	page = encode_page_table_entry(entry);
+	current_directory.tables[last_table_index].pages[last_page_index] = page;
 	return page;
 }
 
